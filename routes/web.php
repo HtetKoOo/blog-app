@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/',function(){
+    return redirect()->route('admin');
+});
+
 // Web Routes
 Route::get('admin/login', 'Admin\AuthController@showLogin');
 Route::post('admin/login', 'Admin\AuthController@login')->name('admin.login');

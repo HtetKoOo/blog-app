@@ -37,20 +37,16 @@
                     <div class="widget-content-wrapper">
                         <div class="widget-content-left">
                             <div class="btn-group">
-                                <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
-                                    <img width="42" class="rounded-circle"
-                                        src=""
-                                        alt="imag">
+                                <button type="button" class="p-0 btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img width="42" class="rounded-circle" src="" alt="imag">
                                     <i class="fa fa-angle-down ml-2 opacity-8"></i>
-                                </a>
+                                </button>
                                 <div tabindex="-1" role="menu" aria-hidden="true"
                                     class="dropdown-menu dropdown-menu-right">
-                                    <button type="button" tabindex="0" class="dropdown-item">User
-                                        Account</button>
+                                    <button type="button" tabindex="0" class="dropdown-item">User Account</button>
                                     <div tabindex="-1" class="dropdown-divider"></div>
                                     <a href="#" tabindex="0" class="dropdown-item" onclick="event.preventDefault();
-                                    document.getElementById('logout-form').submit();">Logout</a>
-
+        document.getElementById('logout-form').submit();">Logout</a>
                                     <form id="logout-form" action="{{url('/admin/logout')}}" method="POST" class="d-none">
                                         @csrf
                                     </form>
