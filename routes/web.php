@@ -19,8 +19,9 @@ Route::group(['prefix'=>'admin','namespace'=>'Admin','middleware'=>'RedirectIfNo
 
     Route::resource('tag', 'TagController');
     Route::get('tag/datatable/ssd', 'TagController@ssd');
-
+    
     Route::resource('article', 'ArticleController');
+    Route::get('article/datatable/ssd', 'ArticleController@ssd');
 
     Route::post('logout', 'AuthController@logout');
 });

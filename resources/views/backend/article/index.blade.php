@@ -25,8 +25,8 @@
                 <thead>
                     <tr class="bg-light">
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Slug</th>
+                        <th>Title</th>
+                        <th>Description</th>
                         <th>Created at</th>
                         <th>Updated at</th>
                         <th>Action</th>
@@ -51,12 +51,12 @@
                     name: "id",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "title",
+                    name: "title",
                 },
                 {
-                    data: "slug",
-                    name: "slug",
+                    data: "description",
+                    name: "description",
                 },
                 {
                     data: "created_at",
@@ -87,7 +87,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '/admin/programming/' + id,
+                        url: '/admin/article/' + id,
                         type: 'DELETE',
                         success: function() {
                             table.ajax.reload();

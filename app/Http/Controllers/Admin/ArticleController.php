@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Programming;
+use Carbon\Carbon;
 use App\Models\Tag;
+use App\Models\Article;
+use App\Models\Programming;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class ArticleController extends Controller
 {
@@ -14,12 +17,15 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        return view('backend.article.index');
+        $data = Article::orderBy('id','desc')
+        ->with('tag','programming')
+        ->paginate(10);
+        return view('backend.article.index',compact('data'));
     }
 
     public function ssd()
     {
-        $data = Programming::query();
+        $data = Article::query();
 
         return DataTables::of($data)
             ->editColumn('created_at', function ($each) {
@@ -29,7 +35,7 @@ class ArticleController extends Controller
                 return Carbon::parse($each->updated_at)->format('Y-m-d H:i:s');
             })
             ->addColumn('action', function ($each) {
-                $edit_icon = '<a href="' . url('admin/programming/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
+                $edit_icon = '<a href="' . url('admin/article/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
                 $delete_icon = '<a href="#" class="text-danger delete" data-id="' . $each->id . '"><i class="fas fa-trash-alt"></i></a>';
 
                 return '<div class="action-icon">' . $edit_icon . $delete_icon . '</div>';
@@ -42,9 +48,9 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        $programming = Programming::all();
+        $programmings = Programming::all();
         $tags = Tag::all();
-        return view('backend.article.create',compact('programming', 'tags'));
+        return view('backend.article.create', compact('programmings', 'tags'));
     }
 
     /**
@@ -53,13 +59,28 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'title' => 'required|string|max:30',
+            'image' => 'required|max:10240',
+            'description' => 'required|string',
         ]);
-        Programming::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
+
+        $file = $request->file('image');
+        $file_name = uniqid() . $file->getClientOriginalName();
+        $file->move(public_path('/images'), $file_name);
+
+        $createdArticle = Article::create([
+            'title' => $request->title,
+            'image' => $file_name,
+            'description' => strip_tags($request->description),
+            'like_count' => 0,
+            'view_count' => 0,
         ]);
-        return redirect('/admin/programming')->with('success', 'Programming language created successfully.');
+
+        $article = Article::find($createdArticle->id);
+        $article->tag()->sync($request->tag);
+        $article->programming()->sync($request->programming);
+
+        return redirect('admin/article')->with('success', 'Successfully Created');
     }
 
     /**
@@ -75,8 +96,8 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
-        $programming = Programming::findOrFail($id);
-        return view('backend.programming.edit', compact('programming'));
+        $article = Article::findOrFail($id);
+        return view('backend.article.edit', compact('article'));
     }
 
     /**
@@ -95,8 +116,8 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        $programming = Programming::findOrFail($id);
-        $programming->delete();
+        $article = Article::findOrFail($id);
+        $article->delete();
         return 'success';
     }
 }
