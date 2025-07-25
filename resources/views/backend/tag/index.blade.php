@@ -74,28 +74,38 @@
                 },
             ],
         });
+    });
 
-        $(document).on('click', '.delete', function(e) {
-            e.preventDefault();
-
-            var id = $(this).data('id');
-
-            Swal.fire({
-                title: 'Are you sure, you want to delete?',
-                showCancelButton: true,
-                confirmButtonText: `Confirm`,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/admin/tag/' + id,
-                        type: 'DELETE',
-                        success: function() {
-                            table.ajax.reload();
-                        }
-                    });
-                }
-            })
-        });
+    $(document).on('click', '.delete-tag', function() {
+        var id = $(this).data('id');
+        var form = $('#delete-tag-form');
+        form.attr('action', '/admin/tag/' + id);
+        $('#deleteTagModal').modal('show');
     });
 </script>
 @endsection
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteTagModal" tabindex="-1" role="dialog" aria-labelledby="deleteTagModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="delete-tag-form" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTagModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this tag?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

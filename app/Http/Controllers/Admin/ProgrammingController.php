@@ -32,8 +32,9 @@ class ProgrammingController extends Controller
             })
             ->addColumn('action', function ($each) {
                 $edit_icon = '<a href="' . url('admin/programming/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
-                $delete_icon = '<a href="#" class="text-danger delete" data-id="' . $each->id . '"><i class="fas fa-trash-alt"></i></a>';
-
+                $delete_icon = '<button type="button" class="btn btn-link text-danger p-0 delete-programming" data-id="' . $each->id . '">
+                <i class="fas fa-trash-alt"></i>
+                </button>';
                 return '<div class="action-icon">' . $edit_icon . $delete_icon . '</div>';
             })
             ->rawColumns(['action'])
@@ -98,6 +99,6 @@ class ProgrammingController extends Controller
     {
         $programming = Programming::findOrFail($id);
         $programming->delete();
-        return 'success';
+        return redirect()->back()->with('success', 'Programming language deleted successfully.');
     }
 }

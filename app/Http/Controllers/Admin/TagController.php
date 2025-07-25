@@ -32,8 +32,9 @@ class TagController extends Controller
             })
             ->addColumn('action', function ($each) {
                 $edit_icon = '<a href="' . url('admin/tag/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
-                $delete_icon = '<a href="#" class="text-danger delete" data-id="' . $each->id . '"><i class="fas fa-trash-alt"></i></a>';
-
+                $delete_icon = '<button type="button" class="btn btn-link text-danger p-0 delete-tag" data-id="' . $each->id . '">
+                <i class="fas fa-trash-alt"></i>
+                </button>';
                 return '<div class="action-icon">' . $edit_icon . $delete_icon . '</div>';
             })
             ->make(true);
@@ -97,6 +98,6 @@ class TagController extends Controller
     {
         $tag = Tag::findOrFail($id);
         $tag->delete();
-        return 'success';
+        return redirect()->back()->with('success','Tag deleted successfully.');
     }
 }
