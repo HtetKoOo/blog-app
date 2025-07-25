@@ -19,7 +19,7 @@
         <div class="card-body">
             @include('backend.layouts.flash')
 
-            <form action="{{ route('article.update', $article->id) }}" method="POST" id="update">
+            <form action="{{ route('article.update', $article->id) }}" method="POST" id="update" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 

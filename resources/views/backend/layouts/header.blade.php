@@ -36,22 +36,20 @@
                 <div class="widget-content p-0">
                     <div class="widget-content-wrapper">
                         <div class="widget-content-left">
-                            <div class="btn-group">
-                                <button type="button" class="p-0 btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img width="42" class="rounded-circle" src="" alt="imag">
-                                    <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                            <div class="custom-dropdown" style="position: relative; display: inline-block;">
+                                <button id="customDropdownBtn" class="btn btn-secondary">
+                                    {{ Auth::guard('admin')->user()->name }} <i class="fa fa-angle-down ml-1"></i>
                                 </button>
-                                <div tabindex="-1" role="menu" aria-hidden="true"
-                                    class="dropdown-menu dropdown-menu-right">
-                                    <button type="button" tabindex="0" class="dropdown-item">User Account</button>
-                                    <div tabindex="-1" class="dropdown-divider"></div>
-                                    <a href="#" tabindex="0" class="dropdown-item" onclick="event.preventDefault();
-        document.getElementById('logout-form').submit();">Logout</a>
-                                    <form id="logout-form" action="{{url('/admin/logout')}}" method="POST" class="d-none">
+                                <div id="customDropdownMenu" class="dropdown-menu-custom" style="display: none; position: absolute; right: 0; background: white; min-width: 160px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 9999;">
+                                    <a class="dropdown-item" href="#">User Account</a>
+                                    <div class="dropdown-divider" style="border-top: 1px solid #ccc;"></div>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                                    <form id="logout-form" action="{{ url('/admin/logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
                                 </div>
                             </div>
+
                         </div>
                         <div class="widget-content-left  ml-3 header-user-info">
                             <div class="widget-heading">

@@ -117,7 +117,11 @@ class ArticleController extends Controller
     public function update(Request $request, string $id)
     {
         $article = Article::findOrFail($id);
-
+        $request->validate([
+            'title' => 'string|max:30',
+            'image' => 'nullable|max:10240',
+            'description' => 'string',
+        ]);
         if ($file = $request->file('image')) {
             File::delete(public_path('/images/' . $article->image)); // Delete the old image file
             $file_name = uniqid() . $file->getClientOriginalName();
