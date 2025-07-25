@@ -75,27 +75,73 @@
             ],
         });
 
-        $(document).on('click', '.delete', function(e) {
-            e.preventDefault();
-
+        $(document).on('click', '.delete-article', function() {
             var id = $(this).data('id');
+            var form = $('#delete-article-form');
+            form.attr('action', '/admin/article/' + id);
+            $('#deleteArticleModal').modal('show');
+        });
 
-            Swal.fire({
-                title: 'Are you sure, you want to delete?',
-                showCancelButton: true,
-                confirmButtonText: `Confirm`,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/admin/article/' + id,
-                        type: 'DELETE',
-                        success: function() {
-                            table.ajax.reload();
-                        }
-                    });
-                }
-            })
+        // Add inside your $(document).ready(function() { ... });
+        $(document).on('click', '.detail', function() {
+            var id = $(this).data('id');
+            $.get('/admin/article/' + id + '/detail', function(data) {
+                let tags = data.tag.map(t => t.name).join(', ');
+                let programmings = data.programming.map(p => p.name).join(', ');
+                let html = `
+            <strong>Title:</strong> ${data.title}<br>
+            <strong>Description:</strong> ${data.description}<br>
+            <strong>Tags:</strong> ${tags}<br>
+            <strong>Programmings:</strong> ${programmings}<br>
+            <img src="/images/${data.image}" class="img-fluid mt-2" alt="Article Image">
+            `;
+                $('#article-detail-content').html(html);
+                $('#articleDetailModal').modal('show');
+            });
         });
     });
 </script>
 @endsection
+
+<!-- Article Detail Modal -->
+<div class="modal fade" id="articleDetailModal" tabindex="-1" role="dialog" aria-labelledby="articleDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="articleDetailModalLabel">Article Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Details will be loaded here -->
+                <div id="article-detail-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteArticleModal" tabindex="-1" role="dialog" aria-labelledby="deleteArticleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="delete-article-form" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteArticleModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this article?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
