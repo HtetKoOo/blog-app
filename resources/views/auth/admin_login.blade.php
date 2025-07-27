@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app_plain')
+@extends('backend.layouts.app_plain')
 @section('title', 'Admin Login')
 @section('content')
 <div class="container">

@@ -2,14 +2,31 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Web Routes
+// User Routes
+Route::namespace('User')->middleware('guest')->group( function () {
+    Route::get('login', 'AuthController@showLogin')->name('login');
+    Route::post('login', 'AuthController@login');
+    Route::get('register', 'AuthController@showRegister')->name('register');
+    Route::post('register', 'AuthController@register');
+});
+
+Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('auth');
+
+Route::namespace('User')->middleware('auth')->group(function(){
+    Route::get('/', 'PageController@home')->name('home');
+});
+
+
+//_____________________________________________________________________________________________
+//_____________________________________________________________________________________________
+
+
+//Admin routes
 Route::prefix('admin')->namespace('Admin')->middleware('guest:admin')->group( function () {
     Route::get('login', 'AuthController@showLogin')->name('admin.login.form');
     Route::post('login', 'AuthController@login')->name('admin.login');
 });
 
-
-//admin routes
 Route::prefix('admin')->namespace('Admin')->middleware('auth:admin')->group( function () {
 
     Route::get('/', 'PageController@dashboard')->name('admin');
