@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Article;
 use App\Models\Programming;
 use App\Models\Tag;
 use Illuminate\Pagination\Paginator;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
+        View::share('article',Article::all());
         View::share('tag',Tag::all());
         View::share('programming',Programming::all());
     }

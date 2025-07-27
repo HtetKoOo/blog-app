@@ -10,7 +10,12 @@ Route::namespace('User')->middleware('guest')->group( function () {
     Route::post('register', 'AuthController@register');
 });
 
+Route::get('article','User\ArticleController@all')->name('article.all');
+
+Route::get('article/detail','User\ArticleController@detail')->name('article.detail');
+
 Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('auth');
+
 
 Route::namespace('User')->middleware('auth')->group(function(){
     Route::get('/', 'PageController@home')->name('home');
