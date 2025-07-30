@@ -24,6 +24,9 @@ const App = () => {
                 alert("Comment added successfully");
             });
     };
+    const articleLike = () => {
+        
+    }
     return (
         <>
             <div>
@@ -52,7 +55,7 @@ const App = () => {
                             {prog.name}
                         </span>
                     ))}
-                    |<button className="btn btn-sm btn-danger">Like</button>
+                    |<button onClick={articleLike} className="btn btn-sm btn-danger">Like</button>
                     <button className="btn btn-sm btn-warning">Save</button>
                 </div>
                 <div
