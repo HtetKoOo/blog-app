@@ -93,7 +93,7 @@
             <strong>Description:</strong> ${data.description}<br>
             <strong>Tags:</strong> ${tags}<br>
             <strong>Programmings:</strong> ${programmings}<br>
-            <img src="/images/${data.image}" class="img-fluid mt-2" alt="Article Image">
+            <img src="/storage/${data.image}" class="img-fluid mt-2" alt="Article Image">
             `;
                 $('#article-detail-content').html(html);
                 $('#articleDetailModal').modal('show');

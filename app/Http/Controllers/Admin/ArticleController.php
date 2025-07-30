@@ -10,12 +10,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $data = Article::orderBy('id', 'desc')
@@ -52,9 +51,6 @@ class ArticleController extends Controller
             ->make(true);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $programmings = Programming::all();
@@ -62,47 +58,38 @@ class ArticleController extends Controller
         return view('backend.article.create', compact('programmings', 'tags'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:30',
-            'image' => 'required|max:10240',
+            'image' => 'required|image|max:10240', // validate as image
             'description' => 'required|string',
         ]);
 
-        $file = $request->file('image');
-        $file_name = uniqid() . $file->getClientOriginalName();
-        $file->move(public_path('/images'), $file_name);
+        // Store the image in storage/app/public/articles
+        $file_name = $request->file('image')->store('articles', 'public');
 
+        // Save article
         $createdArticle = Article::create([
             'title' => $request->title,
-            'image' => $file_name,
-            'description' => strip_tags($request->description),
+            'image' => $file_name, // Save only the path
+            'description' => $request->description,
             'like_count' => 0,
             'view_count' => 0,
         ]);
 
-        $article = Article::find($createdArticle->id);
-        $article->tag()->sync($request->tag);
-        $article->programming()->sync($request->programming);
+        // Sync tags and programming
+        $createdArticle->tag()->sync($request->tag);
+        $createdArticle->programming()->sync($request->programming);
 
         return redirect('admin/article')->with('success', 'Successfully Created');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $article = Article::with('tag', 'programming')->findOrFail($id);
@@ -111,9 +98,6 @@ class ArticleController extends Controller
         return view('backend.article.edit', compact('article', 'tags', 'programmings'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $article = Article::findOrFail($id);
@@ -123,9 +107,8 @@ class ArticleController extends Controller
             'description' => 'string',
         ]);
         if ($file = $request->file('image')) {
-            File::delete(public_path('/images/' . $article->image)); // Delete the old image file
-            $file_name = uniqid() . $file->getClientOriginalName();
-            $file->move(public_path('/images'), $file_name);
+            Storage::disk('public')->delete($article->image); // Store the image in storage/app/public/articles
+            $file_name = $request->file('image')->store('articles', 'public');
         }else{
             $file_name = $article->image; // Keep the old image if no new file is uploaded
         }
@@ -140,13 +123,10 @@ class ArticleController extends Controller
         return redirect('admin/article')->with('success', 'Successfully Updated');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $article = Article::findOrFail($id);
-        File::delete(public_path('/images/' . $article->image)); // Delete the image file
+        Storage::disk('public')->delete($article->image); // Store the image in storage/app/public/articles
         $article->tag()->sync([]); // Detach all tags
         $article->programming()->sync([]); // Detach all programmings
         $article->delete();

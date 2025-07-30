@@ -39,6 +39,9 @@ class ArticleController extends Controller
     public function detail($id)
     {
         $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('article.all')->with('error', 'You must be logged in to view this article.');
+        }
         $data = Article::with('tag', 'programming', 'comment.user','views.user')->findOrFail($id);
         $checkAlreadyViewed = ArticleView::where('user_id', $user->id)
             ->where('article_id', $data->id)

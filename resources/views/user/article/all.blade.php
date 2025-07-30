@@ -11,7 +11,7 @@
         @foreach($data as $d)
         <a href="{{url('article/'.$d->id)}}" class="col-6  pl-0 mt-4">
             <div class="rounded bg-card">
-                <img class="rounded" src="{{asset('images/'.$d->image)}}" style="width:100%" alt="">
+                <img class="rounded" src="{{asset('storage/'.$d->image)}}" style="width:100%" alt="Article Image">
                 <div class="p-4 text-white">
                     <h4 class="text-white">{{$d->title}}</h4>
                     <div class="d-flex justify-content-between">
