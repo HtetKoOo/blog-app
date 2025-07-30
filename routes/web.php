@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('test', function(){
+    return view('test');
+});
+
 // User Routes
 Route::namespace('User')->middleware('guest')->group( function () {
     Route::get('login', 'AuthController@showLogin')->name('login');
@@ -12,13 +16,18 @@ Route::namespace('User')->middleware('guest')->group( function () {
 
 Route::get('article','User\ArticleController@all')->name('article.all');
 
-Route::get('article/detail','User\ArticleController@detail')->name('article.detail');
+Route::get('article/{id}','User\ArticleController@detail')->name('article.detail');
 
 Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('auth');
 
 
 Route::namespace('User')->middleware('auth')->group(function(){
     Route::get('/', 'PageController@home')->name('home');
+});
+
+//api
+Route::prefix('api')->namespace('Api')->group(function(){
+    Route::post('/article-comment', 'ArticleApi@makeComment');
 });
 
 

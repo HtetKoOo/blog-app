@@ -9,6 +9,12 @@ class Article extends Model
 {
     protected $guarded = [];
     use HasFactory;
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return asset('images/' . $this->image);
+    }
 
     public function comment()
     {

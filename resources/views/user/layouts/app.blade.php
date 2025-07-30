@@ -17,14 +17,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css">
     <!-- custom style -->
     <link rel="stylesheet" href="{{asset('asset/style/style.css')}}">
+
+    @yield('styles')
 </head>
 
 <body>
     <div class="m-5">
         <div class="row">
             <div class="col-8">
-                <h2 class="text-primary bg-card p-2 pl-5 rounded">MERN Fullstack Community Blogging - <span
-                        class="text-success">MMCoder</span></h2>
+                <h2 class="text-primary bg-card p-2 pl-5 rounded">MERN Fullstack Community Blogging -
+                    <span class="text-success">MMCoder</span>
+                </h2>
 
                 @yield('content')
 
@@ -33,14 +36,15 @@
             <div class="col-4">
 
                 <div class="bg-card p-3">
+                    <a href="{{url('article')}}" class="btn btn-primary my-2">All Articles</a>
                     @guest
-                    <a href="{{url('login')}}" class="btn btn-primary">Login</a>
-                    <a href="{{url('register')}}" class="btn btn-primary">Register</a>
-                    <a href="{{url('admin')}}" class="btn btn-primary">Admin Login</a>
+                    <a href="{{url('login')}}" class="btn btn-primary my-2">User Login</a>
+                    <a href="{{url('register')}}" class="btn btn-primary my-2">User Register</a>
+                    <a href="{{url('admin')}}" class="btn btn-primary my-2">Admin Login</a>
                     @endguest
                     @auth
-                    <a href="{{url('profile')}}" class="btn btn-primary">Profile</a>
-                    <a href="{{url('logout')}}" class="btn btn-primary">Logout</a>
+                    <a href="{{url('profile')}}" class="btn btn-primary my-2">Profile</a>
+                    <a href="{{url('logout')}}" class="btn btn-primary my-2">Logout</a>
                     @endauth
                 </div>
 
@@ -128,35 +132,36 @@
             </div>
         </div>
     </div>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+        @if(session('success'))
+        Toast.fire({
+            icon: 'success',
+            title: "{{session('success')}}"
+        });
+        @endif
+    
+        @if(session('error'))
+        Toast.fire({
+            icon: 'error',
+            title: "{{session('error')}}"
+        });
+        @endif
+    </script>
+    @yield('scripts')
 </body>
 
 </html>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    });
-    @if(session('success'))
-    Toast.fire({
-        icon: 'success',
-        title: "{{session('success')}}"
-    });
-    @endif
-
-    @if(session('error'))
-    Toast.fire({
-        icon: 'error',
-        title: "{{session('error')}}"
-    });
-    @endif
-</script>

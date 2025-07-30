@@ -27,12 +27,16 @@ class ArticleController extends Controller
                 $q->where('article_programmings.programming_id', $findProgramming->id);
             });
         }
-        $data = $data->paginate(4);
+        if($title = request()->title){
+            $data->where('title', 'like', "%{$title}%");
+        }
+        $data = $data->orderBy('id','desc')->paginate(4);
         return view('user.article.all',compact('data'));
     }
 
     public function detail($id)
     {
-        return view('user.article.detail', compact('id'));
+        $data = Article::with('tag', 'programming','comment.user')->findOrFail($id);
+        return view('user.article.detail', compact('data'));
     }
 }
