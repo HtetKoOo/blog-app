@@ -13,7 +13,7 @@ class Article extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset('images/' . $this->image);
+        return asset('storage/' . $this->image);
     }
 
     public function comment()
