@@ -30,4 +30,14 @@ class Article extends Model
     {
         return $this->belongsToMany(Programming::class, 'article_programmings');
     }
+
+    public function likes()
+    {
+        return $this->hasMany(ArticleLike::class);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(ArticleView::class);
+    }
 }

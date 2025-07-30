@@ -9,6 +9,7 @@ const App = () => {
     const [comments, setComments] = useState(article_detail.comment);
     const [comment, setComment] = useState("");
     const [commentLoader, setCommentLoader] = useState(false);
+    const [likeCount, setLikeCount] = useState(article_detail.like_count);
 
     const addComment = () => {
         setCommentLoader(true);
@@ -21,12 +22,32 @@ const App = () => {
                 setComments([d.data, ...comments]);
                 setComment("");
                 setCommentLoader(false);
-                alert("Comment added successfully");
+                showSuccess("Comment added successfully");
             });
     };
     const articleLike = () => {
-        
-    }
+        axios.post("/api/article-like", { id: article_detail.id }).then((d) => {
+            if (d.data == "already_liked") {
+                showError("You have already liked this article");
+                return;
+            }
+            if (d.data == "success") {
+                setLikeCount(likeCount + 1);
+                showSuccess("Liked successfully");
+            }
+        });
+    };
+    const saveArticle = () => {
+        axios.post("/api/article-save", { id: article_detail.id }).then((d) => {
+            if (d.data == "already_saved") {
+                showError("Article already saved");
+                return;
+            }
+            if (d.data == "success") {
+                showSuccess("Article saved successfully");
+            }
+        });
+    };
     return (
         <>
             <div>
@@ -55,8 +76,19 @@ const App = () => {
                             {prog.name}
                         </span>
                     ))}
-                    |<button onClick={articleLike} className="btn btn-sm btn-danger">Like</button>
-                    <button className="btn btn-sm btn-warning">Save</button>
+                    |
+                    <button
+                        onClick={articleLike}
+                        className="btn btn-sm btn-danger"
+                    >
+                        Like : {likeCount}
+                    </button>
+                    <button
+                        onClick={saveArticle}
+                        className="btn btn-sm btn-warning"
+                    >
+                        Save
+                    </button>
                 </div>
                 <div
                     className="card card-body bg-card mt-2"

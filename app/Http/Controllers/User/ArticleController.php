@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ArticleView;
 use App\Models\Programming;
 use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
@@ -37,8 +38,18 @@ class ArticleController extends Controller
 
     public function detail($id)
     {
-        $data = Article::with('tag', 'programming', 'comment.user')->findOrFail($id);
-        $data->update(['view_count' => DB::raw('view_count + 1')]);
+        $user = auth()->user();
+        $data = Article::with('tag', 'programming', 'comment.user','views.user')->findOrFail($id);
+        $checkAlreadyViewed = ArticleView::where('user_id', $user->id)
+            ->where('article_id', $data->id)
+            ->first();
+        if (!$checkAlreadyViewed) {
+            ArticleView::create([
+                'user_id' => $user->id,
+                'article_id' => $data->id,
+            ]);
+            $data->update(['view_count' => DB::raw('view_count + 1')]);
+        }
         return view('user.article.detail', compact('data'));
     }
 }

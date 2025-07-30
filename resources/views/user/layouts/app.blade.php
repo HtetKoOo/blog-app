@@ -152,16 +152,30 @@
             title: "{{session('success')}}"
         });
         @endif
-    
+
         @if(session('error'))
         Toast.fire({
             icon: 'error',
             title: "{{session('error')}}"
         });
         @endif
+
+        const showSuccess = (message) => {
+            Toast.fire({
+                icon: 'success',
+                title: message
+            });
+        }
+
+        const showError = (message) => {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+
+        }
     </script>
     @yield('scripts')
 </body>
 
 </html>
-

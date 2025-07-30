@@ -28,6 +28,8 @@ Route::namespace('User')->middleware('auth')->group(function(){
 //api
 Route::prefix('api')->namespace('Api')->group(function(){
     Route::post('/article-comment', 'ArticleApi@makeComment');
+    Route::post('/article-like', 'ArticleApi@like');
+    Route::post('/article-save', 'ArticleApi@save');
 });
 
 
