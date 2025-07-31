@@ -73,7 +73,7 @@ class ArticleController extends Controller
         $createdArticle = Article::create([
             'title' => $request->title,
             'image' => $file_name, // Save only the path
-            'description' => $request->description,
+            'description' => strip_tags($request->description),
             'like_count' => 0,
             'view_count' => 0,
         ]);
