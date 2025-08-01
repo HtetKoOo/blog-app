@@ -15,7 +15,6 @@ Route::namespace('User')->middleware('guest')->group( function () {
 });
 
 Route::get('article','User\ArticleController@all')->name('article.all');
-
 Route::get('article/{id}','User\ArticleController@detail')->name('article.detail');
 
 Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('auth');
@@ -23,6 +22,7 @@ Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('
 
 Route::namespace('User')->middleware('auth')->group(function(){
     Route::get('/', 'PageController@home')->name('home');
+    Route::get('/profile', 'ProfileController@showProfile')->name('showProfile');
 });
 
 //api
@@ -30,6 +30,7 @@ Route::prefix('api')->namespace('Api')->group(function(){
     Route::post('/article-comment', 'ArticleApi@makeComment');
     Route::post('/article-like', 'ArticleApi@like');
     Route::post('/article-save', 'ArticleApi@save');
+    Route::get('/article-save', 'ArticleApi@getSave');
 });
 
 
