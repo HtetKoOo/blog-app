@@ -1,6 +1,6 @@
 storage:
   - name: app-storage
-    mount: /storage
+    mount: storage/app/public
 
 build:
   - composer install --no-dev --optimize-autoloader
