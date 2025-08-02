@@ -1,5 +1,5 @@
 storage:
-  - name: storage
+  - name: app-storage
     mount: /storage
 
 build:
