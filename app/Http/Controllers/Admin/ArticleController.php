@@ -8,13 +8,14 @@ use App\Models\Article;
 use App\Models\Programming;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ArticleController extends Controller
 {
-    
+
     public function index()
     {
         $data = Article::orderBy('id', 'desc')
@@ -66,13 +67,13 @@ class ArticleController extends Controller
             'description' => 'required|string',
         ]);
 
-        // Store the image in storage/app/public/articles
-        $file_name = $request->file('image')->store('articles', 'public');
+        // Upload image to Cloudinary
+        $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
 
         // Save article
         $createdArticle = Article::create([
             'title' => $request->title,
-            'image' => $file_name, // Save only the path
+            'image' => $uploadedFileUrl, // Save only the path
             'description' => strip_tags($request->description),
             'like_count' => 0,
             'view_count' => 0,
@@ -106,15 +107,14 @@ class ArticleController extends Controller
             'image' => 'nullable|max:10240',
             'description' => 'string',
         ]);
-        if ($file = $request->file('image')) {
-            Storage::disk('public')->delete($article->image); // Store the image in storage/app/public/articles
-            $file_name = $request->file('image')->store('articles', 'public');
-        }else{
-            $file_name = $article->image; // Keep the old image if no new file is uploaded
+        if ($request->file('image')) {
+            $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
+        } else {
+            $uploadedFileUrl = $article->image; // keep old image
         }
         $article->update([
             'title' => $request->title,
-            'image' => $file_name,
+            'image' => $uploadedFileUrl,
             'description' => strip_tags($request->description),
         ]);
         $article->tag()->sync($request->tag);
@@ -126,7 +126,6 @@ class ArticleController extends Controller
     public function destroy(string $id)
     {
         $article = Article::findOrFail($id);
-        Storage::disk('public')->delete($article->image); // Store the image in storage/app/public/articles
         $article->tag()->sync([]); // Detach all tags
         $article->programming()->sync([]); // Detach all programmings
         $article->delete();

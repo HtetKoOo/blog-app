@@ -13,7 +13,13 @@ class Article extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset('storage/' . $this->image);
+        // If the image is already a full URL (Cloudinary, S3, etc.), return it as is.
+        if ($this->image && filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        // Otherwise, return from local storage (for backward compatibility)
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 
     public function comment()
