@@ -27,6 +27,8 @@ class ArticleController extends Controller
     public function detail($id)
     {
         $article = Article::with('tag', 'programming')->findOrFail($id);
+        // Add image_url to the response
+        $article->image_url = $article->image_url;
         return response()->json($article);
     }
 
