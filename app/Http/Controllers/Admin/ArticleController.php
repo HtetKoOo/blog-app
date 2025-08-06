@@ -61,11 +61,15 @@ class ArticleController extends Controller
 
     public function store(Request $request)
     {
+        if(!$request->hasFile('image')) {
+            return redirect()->back()->withErrors(['image' => 'Image is required']);
+        }
         $request->validate([
             'title' => 'required|string|max:30',
-            'image' => 'required|image|max:10240', // validate as image
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'description' => 'required|string',
         ]);
+
 
         // Upload image to Cloudinary
         $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
@@ -104,7 +108,7 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         $request->validate([
             'title' => 'string|max:30',
-            'image' => 'nullable|max:10240',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'description' => 'string',
         ]);
         if ($request->file('image')) {
@@ -126,6 +130,10 @@ class ArticleController extends Controller
     public function destroy(string $id)
     {
         $article = Article::findOrFail($id);
+        // Delete image from Cloudinary
+        if ($article->image) {
+            Cloudinary::destroy($article->image); // Use public_id, not URL
+        }
         $article->tag()->sync([]); // Detach all tags
         $article->programming()->sync([]); // Detach all programmings
         $article->delete();

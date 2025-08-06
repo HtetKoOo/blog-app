@@ -42,10 +42,10 @@
 
                 <div class="form-group">
                     <label for="">Title</label>
-                    <input type="text" name="title" class="form-control">
+                    <input type="text" name="title" class="form-control" value="{{old('title')}}" placeholder="Enter article title">
                 </div>
                 <div class="form-group">
-                    <label for="">Image</label>
+                    <label for="">Image (only choose image file)</label>
                     <input type="file" name="image" class="form-control">
                 </div>
                 <div class="form-group">
@@ -64,7 +64,6 @@
 @endsection
 
 @section('scripts')
-{{--{!! JsValidator::formRequest('App\Http\Requests\StoreUser', '#create') !!}--}}
 
 <script>
     $(document).ready(function() {
@@ -73,7 +72,6 @@
 </script>
 <script>
     $('#description').summernote({
-        placeholder: 'Hello Bootstrap 4',
         tabsize: 2,
         height: 100
     });
