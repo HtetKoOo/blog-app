@@ -8,8 +8,6 @@ use App\Models\Article;
 use App\Models\Programming;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
