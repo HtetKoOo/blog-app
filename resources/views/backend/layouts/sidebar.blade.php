@@ -59,6 +59,12 @@
                         Tags
                     </a>
                 </li>
+                <li>
+                    <a href="{{url('/admin/ads')}}" class="@yield('ads-active')">
+                        <i class="metismenu-icon pe-7s-wallet"></i>
+                        Ads Management
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

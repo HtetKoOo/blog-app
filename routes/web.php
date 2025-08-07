@@ -48,15 +48,19 @@ Route::prefix('admin')->namespace('Admin')->middleware('auth:admin')->group( fun
 
     Route::get('/', 'PageController@dashboard')->name('admin');
 
-    Route::resource('programming', 'ProgrammingController');
-    Route::get('programming/datatable/ssd', 'ProgrammingController@ssd');
-
-    Route::resource('tag', 'TagController');
-    Route::get('tag/datatable/ssd', 'TagController@ssd');
-
     Route::resource('article', 'ArticleController');
     Route::get('article/datatable/ssd', 'ArticleController@ssd');
     Route::get('article/{id}/detail', 'ArticleController@detail')->name('admin.article.detail');
+    
+    Route::resource('programming', 'ProgrammingController');
+    Route::get('programming/datatable/ssd', 'ProgrammingController@ssd');
+    
+    Route::resource('tag', 'TagController');
+    Route::get('tag/datatable/ssd', 'TagController@ssd');
+    
+    Route::resource('ads', 'AdsController');
+    Route::get('ads/datatable/ssd', 'AdsController@ssd');
+    Route::get('ads/{id}/detail', 'AdsController@detail')->name('admin.ads.detail');
 
     Route::post('logout', 'AuthController@logout');
 });

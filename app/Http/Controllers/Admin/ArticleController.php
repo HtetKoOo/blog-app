@@ -87,7 +87,7 @@ class ArticleController extends Controller
         $createdArticle->tag()->sync($request->tag);
         $createdArticle->programming()->sync($request->programming);
 
-        return redirect('admin/article')->with('success', 'Successfully Created');
+        return redirect('admin/article')->with('success', 'Successfully Created Article');
     }
 
     public function show(string $id)
@@ -124,7 +124,7 @@ class ArticleController extends Controller
         $article->tag()->sync($request->tag);
         $article->programming()->sync($request->programming);
 
-        return redirect('admin/article')->with('success', 'Successfully Updated');
+        return redirect('admin/article')->with('success', 'Successfully Updated Article');
     }
 
     public function destroy(string $id)

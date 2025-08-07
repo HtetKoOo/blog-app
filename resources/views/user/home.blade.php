@@ -6,7 +6,7 @@
 </div>
 
 <!-- first blog -->
-<div class="mt-4">
+<!-- <div class="mt-4">
     <div class="d-flex rounded bg-card">
         <img style="width: 400px;"
             src="https://toka.b-cdn.net/wp-content/uploads/2022/01/black-man-looking-stock-market-exchange-information-computer-crypto-currency.png"
@@ -37,6 +37,22 @@
                 </div>
             </div>
         </div>
+    </div>
+</div> -->
+
+<!-- ads section -->
+<div class="mt-4">
+    <div class="ads-scroll d-flex overflow-auto bg-card rounded p-3" style="gap: 1rem;">
+        @foreach($ads as $ad)
+        <div class="ad-item flex-shrink-0" style="width: 400px;">
+            <img src="{{ $ad->image_url }}" alt="Ad Image" class="img-fluid rounded">
+            <div class="text-white mt-2">
+                <h5>{{ $ad->title }}</h5>
+                <p class="text-muted">{{ $ad->description }}</p>
+                <a href="{{ $ad->link }}" class="btn btn-sm btn-primary">Learn More</a>
+            </div>
+        </div>
+        @endforeach
     </div>
 </div>
 
