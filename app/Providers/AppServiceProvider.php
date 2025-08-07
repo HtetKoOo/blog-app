@@ -26,8 +26,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
-        View::share('article',Article::all());
         View::share('tag',Tag::all());
         View::share('programming',Programming::all());
+
+        View::share('trendingArticles', Article::with('tag', 'programming')->orderBy('view_count', 'desc')->take(4)->get());
+        View::share('popularArticles', Article::with('tag', 'programming')->orderBy('like_count', 'desc')->take(4)->get());
     }
 }

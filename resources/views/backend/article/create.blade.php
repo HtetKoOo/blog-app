@@ -26,7 +26,7 @@
                     <label for="">Choose tags</label>
                     <select name="tag[]" class="form-control" id="tag" multiple>
                         @foreach($tags as $tag)
-                            <option value="{{$tag->id}}">{{$tag->name}}</option>
+                        <option value="{{$tag->id}}">{{$tag->name}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -35,7 +35,7 @@
                     <label for="">Choose programmings</label>
                     <select name="programming[]" class="form-control" id="programming" multiple>
                         @foreach($programmings as $programming)
-                            <option value="{{$programming->id}}">{{$programming->name}}</option>
+                        <option value="{{$programming->id}}">{{$programming->name}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Description</label>
-                    <textarea name="description" id="description" class="form-control"></textarea>
+                    <textarea name="description" id="description" class="form-control">{{old('description')}}</textarea>
                 </div>
 
                 <div class="d-flex justify-content-center">

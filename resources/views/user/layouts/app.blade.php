@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MERN Blog</title>
+    <title>Blogify</title>
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/argon-design-system-free@1.2.0/assets/css/argon-design-system.min.css">
     <!-- google fonts -->
@@ -25,8 +25,8 @@
     <div class="m-5">
         <div class="row">
             <div class="col-8">
-                <h2 class="text-primary bg-card p-2 pl-5 rounded">MERN Fullstack Community Blogging -
-                    <span class="text-success">MMCoder</span>
+                <h2 class="text-primary bg-card p-2 pl-5 rounded">Did You Know?
+                    <span class="text-success">(Random Access Facts)</span>
                 </h2>
 
                 @yield('content')
@@ -36,6 +36,7 @@
             <div class="col-4">
 
                 <div class="bg-card p-3">
+                    <a href="{{url('')}}" class="btn btn-primary my-2"><i class="fa fas-home"></i>Home</a>
                     <a href="{{url('article')}}" class="btn btn-primary my-2">All Articles</a>
                     @guest
                     <a href="{{url('login')}}" class="btn btn-primary my-2">User Login</a>
@@ -64,68 +65,30 @@
                 <div class="bg-card p-3 mt-4">
                     <h5 class="text-primary"> Top Trending Articles</h5>
                     <div class="row">
+                        @foreach($trendingArticles as $a)
                         <div class="col-6">
                             <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2021/11/3d-aesthetics.png"
+                                <img src="{{$a->image_url}}"
                                     class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
+                                <p class="text-white text-center p-2">{{$a->title}}</p>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2022/01/black-man-looking-stock-market-exchange-information-computer-crypto-currency.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2022/01/black-man-looking-stock-market-exchange-information-computer-crypto-currency.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2021/11/3d-aesthetics.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 
                 <div class="bg-card p-3 mt-4">
                     <h5 class="text-primary"> Most Love Articles</h5>
                     <div class="row">
+                        @foreach($popularArticles as $a)
                         <div class="col-6">
                             <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2021/11/3d-aesthetics.png"
+                                <img src="{{$a->image_url}}"
                                     class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
+                                <p class="text-white text-center p-2">{{$a->title}}</p>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2022/01/black-man-looking-stock-market-exchange-information-computer-crypto-currency.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2022/01/black-man-looking-stock-market-exchange-information-computer-crypto-currency.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-dark rounded">
-                                <img src="https://toka.b-cdn.net/wp-content/uploads/2021/11/3d-aesthetics.png"
-                                    class="w-100 rounded">
-                                <p class="text-white text-center p-2">What is PHP</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 

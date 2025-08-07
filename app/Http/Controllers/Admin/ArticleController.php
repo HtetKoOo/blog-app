@@ -108,7 +108,7 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         $request->validate([
             'title' => 'string|max:30',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'description' => 'string',
         ]);
         if ($request->file('image')) {

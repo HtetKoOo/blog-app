@@ -56,7 +56,7 @@
 
                 <div class="form-group">
                     <label for="">Title</label>
-                    <input type="text" name="title" class="form-control" value="{{$article->title}}">
+                    <input type="text" name="title" class="form-control" value="{{old('title',$article->title)}}">
                 </div>
                 <div class="form-group">
                     <label for="">Image</label>
@@ -67,7 +67,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Description</label>
-                    <textarea name="description" id="description" class="form-control">{{$article->description}}</textarea>
+                    <textarea name="description" id="description" class="form-control">{{old('description',$article->description)}}</textarea>
                 </div>
 
                 <div class="d-flex justify-content-center">
