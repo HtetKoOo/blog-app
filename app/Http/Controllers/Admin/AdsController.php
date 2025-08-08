@@ -45,7 +45,7 @@ class AdsController extends Controller
             ->addColumn('action', function ($each) {
                 $detail_icon = '<a href="#" class="text-success detail" data-id="' . $each->id . '"><i class="fas fa-eye"></i></a>';
                 $edit_icon = '<a href="' . url('admin/ads/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
-                $delete_icon = '<button type="button" class="btn btn-link text-danger p-0 delete-ads" ads-id="' . $each->id . '" data-image="' . $each->image . '">
+                $delete_icon = '<button type="button" class="btn btn-link text-danger p-0 delete-ads" data-id="' . $each->id . '" data-image="' . $each->image . '">
                 <i class="fas fa-trash-alt"></i>
                 </button>';
                 return '<div class="action-icon">' . $detail_icon . $edit_icon . $delete_icon . '</div>';
@@ -98,7 +98,7 @@ class AdsController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $article = Article::findOrFail($id);
+        $ads = Ads::findOrFail($id);
         $request->validate([
             'title' => 'string|max:30',
             'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -106,9 +106,9 @@ class AdsController extends Controller
         if ($request->file('image')) {
             $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
         } else {
-            $uploadedFileUrl = $article->image; // keep old image
+            $uploadedFileUrl = $ads->image_url; // keep old image
         }
-        $article->update([
+        $ads->update([
             'title' => $request->title,
             'description' => strip_tags($request->description),
             'image_url' => $uploadedFileUrl, // Save only the path
