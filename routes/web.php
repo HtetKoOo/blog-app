@@ -55,6 +55,9 @@ Route::prefix('admin')->namespace('Admin')->middleware('auth:admin')->group( fun
     Route::resource('programming', 'ProgrammingController');
     Route::get('programming/datatable/ssd', 'ProgrammingController@ssd');
     
+    Route::resource('music-video', 'MusicVideoController');
+    Route::get('music-video/datatable/ssd', 'MusicVideoController@ssd');
+
     Route::resource('tag', 'TagController');
     Route::get('tag/datatable/ssd', 'TagController@ssd');
     
