@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('singer')->nullable();
             $table->string('cloudinary_public_id')->unique();
-            $table->string('video_url', 500);
-            $table->string('thumbnail_url', 500)->nullable();
+            $table->string('video_url', 500);// URL to the video file
+            $table->string('thumbnail_url', 500)->nullable();//thumbnail image of the video
             $table->integer('duration')->nullable()->comment('Duration in seconds');
             $table->bigInteger('file_size')->nullable()->comment('File size in bytes');
             $table->enum('status', ['active', 'inactive', 'deleted'])->default('active');

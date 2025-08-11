@@ -69,12 +69,7 @@
     $(document).ready(function() {
 
     });
-</script>
-<script>
-    $('#description').summernote({
-        tabsize: 2,
-        height: 100
-    });
+    
     $('#tag,#programming').select2();
 </script>
 @endsection

@@ -78,7 +78,7 @@ class ArticleController extends Controller
         $createdArticle = Article::create([
             'title' => $request->title,
             'image' => $uploadedFileUrl, // Save only the path
-            'description' => strip_tags($request->description),
+            'description' => $request->description,
             'like_count' => 0,
             'view_count' => 0,
         ]);
@@ -111,15 +111,19 @@ class ArticleController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'description' => 'string',
         ]);
-        if ($request->file('image')) {
+        if ($request->hasFile('image')) {
+            // Handle photo upload
+            if ($article->image) {
+                Cloudinary::destroy($article->image); // Delete old photo if exists
+            }
             $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
         } else {
-            $uploadedFileUrl = $article->image; // keep old image
+            $uploadedFileUrl = $article->image; // Keep the old photo if no new one is uploaded
         }
         $article->update([
             'title' => $request->title,
             'image' => $uploadedFileUrl,
-            'description' => strip_tags($request->description),
+            'description' => $request->description,
         ]);
         $article->tag()->sync($request->tag);
         $article->programming()->sync($request->programming);

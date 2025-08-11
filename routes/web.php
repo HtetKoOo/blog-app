@@ -55,12 +55,18 @@ Route::prefix('admin')->namespace('Admin')->middleware('auth:admin')->group( fun
     Route::resource('programming', 'ProgrammingController');
     Route::get('programming/datatable/ssd', 'ProgrammingController@ssd');
     
-    Route::resource('music-video', 'MusicVideoController');
-    Route::get('music-video/datatable/ssd', 'MusicVideoController@ssd');
-
     Route::resource('tag', 'TagController');
     Route::get('tag/datatable/ssd', 'TagController@ssd');
+
+    Route::resource('music-video', 'MusicVideoController');
+    Route::get('music-video/datatable/ssd', 'MusicVideoController@ssd');
     
+    Route::resource('singer', 'SingerController');
+    Route::get('singer/datatable/ssd', 'SingerController@ssd');
+    
+    Route::resource('music-genre', 'MusicGenreController');
+    Route::get('music-genre/datatable/ssd', 'MusicGenreController@ssd');
+
     Route::resource('ads', 'AdsController');
     Route::get('ads/datatable/ssd', 'AdsController@ssd');
     Route::get('ads/{id}/detail', 'AdsController@detail')->name('admin.ads.detail');

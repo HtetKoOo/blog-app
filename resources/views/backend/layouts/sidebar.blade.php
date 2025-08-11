@@ -60,6 +60,24 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{url('/admin/music-video')}}" class="@yield('mv-active')">
+                        <i class="metismenu-icon pe-7s-display2"></i>
+                        Music Videos
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url('/admin/singer')}}" class="@yield('singer-active')">
+                        <i class="metismenu-icon pe-7s-display2"></i>
+                        Singers
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url('/admin/music-genre')}}" class="@yield('mg-active')">
+                        <i class="metismenu-icon pe-7s-display2"></i>
+                        Music Genres
+                    </a>
+                </li>
+                <li>
                     <a href="{{url('/admin/ads')}}" class="@yield('ads-active')">
                         <i class="metismenu-icon pe-7s-wallet"></i>
                         Ads Management
