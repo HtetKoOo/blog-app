@@ -126,8 +126,14 @@ class MusicVideoController extends Controller
 
         $response = $uploadedMusic->getResponse();
         $musicUrl  = $response['secure_url'] ?? null;
-        $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
-        $musicSize = $response['bytes'] ?? null;    // in bytes
+        // Duration: round to whole seconds so Postgres INT accepts it
+        $duration  = isset($response['duration'])
+            ? (int) round($response['duration'])
+            : null;
+        // File size: store as integer bytes (BIGINT column in DB)
+        $musicSize = isset($response['bytes'])
+            ? (int) $response['bytes']
+            : null;
 
         // Upload image to Cloudinary
         $uploadedImage = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
@@ -179,7 +185,7 @@ class MusicVideoController extends Controller
         $musicUrl = $mv->music_url;
         $duration = $mv->duration;
         $musicSize = $mv->file_size;
-        $uploadedMusic = $mv->thumbnail_url;
+        $uploadedImage = $mv->thumbnail_url;
         if ($request->hasFile('music')) {
             if ($mv->music_url) {
                 $publicId = pathinfo(parse_url($mv->music_url, PHP_URL_PATH), PATHINFO_FILENAME);
@@ -190,21 +196,27 @@ class MusicVideoController extends Controller
 
             $response = $uploadedMusic->getResponse();
             $musicUrl  = $response['secure_url'] ?? null;
-            $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
-            $musicSize = $response['bytes'] ?? null;    // in bytes
+            // Duration integer
+            $duration  = isset($response['duration'])
+                ? (int) round($response['duration'])
+                : null;
+            // File size integer
+            $musicSize = isset($response['bytes'])
+                ? (int) $response['bytes']
+                : null;
         }
         if ($request->hasFile('photo')) {
             if ($mv->thumbnail_url) {
                 $publicId = pathinfo(parse_url($mv->thumbnail_url, PHP_URL_PATH), PATHINFO_FILENAME);
                 Cloudinary::destroy($publicId);
             }
-            $thumbnailUrl = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
+            $uploadedImage = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
         }
         // Update safely
         $mv->update([
             'title' => $request->title,
             'description' => $request->description ?? null,
-            'thumbnail_url' => $thumbnailUrl,
+            'thumbnail_url' => $uploadedImage,
             'duration' => $duration,
             'file_size' => $musicSize,
             'status' => $request->status,
