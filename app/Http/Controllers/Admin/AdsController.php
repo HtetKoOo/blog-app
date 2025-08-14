@@ -104,6 +104,7 @@ class AdsController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
         if ($request->file('image')) {
+            Cloudinary::destroy($ads->image);
             $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
         } else {
             $uploadedFileUrl = $ads->image_url; // keep old image

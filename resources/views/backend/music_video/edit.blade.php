@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
-@section('title', 'Edit User')
-@section('ads-active', 'mm-active')
+@section('title', 'Edit Music Video')
+@section('mv-active', 'mm-active')
 @section('content')
 <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -9,7 +9,7 @@
                 <i class="pe-7s-users icon-gradient bg-mean-fruit">
                 </i>
             </div>
-            <div>Edit Ads</div>
+            <div>Edit Music Video</div>
         </div>
     </div>
 </div>
@@ -19,43 +19,74 @@
         <div class="card-body">
             @include('backend.layouts.flash')
 
-            <form action="{{ route('ads.update', $ads->id) }}" method="POST" id="update" enctype="multipart/form-data">
+            <form action="{{ route('music-video.update', $mv->id) }}" method="POST" id="update" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="form-group">
-                    <label for="">Title</label>
-                    <input type="text" name="title" class="form-control" value="{{old('title',$ads->title)}}">
+                    <label for="">Music Video Name</label>
+                    <input type="text" name="title" class="form-control" value="{{old('title',$mv->title)}}">
                 </div>
                 <div class="form-group">
-                    <label for="">Description</label>
-                    <textarea name="description" id="description" class="form-control">{{old('description',$ads->description)}}</textarea>
+                    <label for="">Choose Singer</label>
+                    <select name="singer[]" class="form-control" id="singer" multiple>
+                        @foreach($singers as $singer)
+                        <option value="{{$singer->id}}"
+                            @foreach($mv->singer as $s)
+                            @if($s->id == $singer->id)
+                            selected
+                            @endif
+                            @endforeach>{{$singer->name}}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="">Image (only choose image file)</label>
-                    <input type="file" name="image" class="form-control">
-                    @if($ads->image_url)
-                        <img src="{{ $ads->image_url}}" alt="Ad Image" class="mt-2" style="max-width: 200px;">
+                    <label for="">Choose Music Genre</label>
+                    <select name="mg[]" class="form-control" id="mg" multiple>
+                        @foreach($mgs as $mg)
+                        <option value="{{$mg->id}}"
+                            @foreach($mv->genre as $g)
+                            @if($g->id == $mg->id)
+                            selected
+                            @endif
+                            @endforeach>{{$mg->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Music mp3 file</label>
+                    <input type="file" name="music" class="form-control">
+                    @if ($mv->music_url)
+                    <audio controls style="width: 200px;">
+                        <source src="{{ $mv->music_url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    @else
+                    -
                     @endif
                 </div>
                 <div class="form-group">
-                    <label for="">Link</label>
-                    <input type="text" name="link" class="form-control" value="{{old('link',$ads->link)}}">
+                    <label for="">Music Video Link</label>
+                    <input type="text" name="video_link" class="form-control" value="{{old('video_link',$mv->video_link)}}">
+                </div>
+                <div class="form-group">
+                    <label for="">Description</label>
+                    <textarea name="description" id="description" class="form-control">{{old('description',$mv->description)}}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="">Music Video Photo</label>
+                    <input type="file" name="photo" class="form-control">
+                    @if($mv->thumbnail_url)
+                    <img src="{{ $mv->thumbnail_url }}" alt="Music Video photo" class="img-thumbnail mt-2" style="max-width: 200px;">
+                    @endif
                 </div>
                 <div class="form-group">
                     <label for="">Status</label>
                     <select name="status" class="form-control">
-                        <option value="1" {{ old('status',$ads->status) == 1 ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ old('status',$ads->status) == 0 ? 'selected' : '' }}>Inactive</option>
+                        <option value="1" {{ old('status',$mv->status) == 1 ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ old('status',$mv->status) == 0 ? 'selected' : '' }}>Inactive</option>
+                        <option value="2" {{ old('status',$mv->status) == 2 ? 'selected' : '' }}>Deleted</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label for="">Start Date</label>
-                    <input type="date" name="start_date" class="form-control" value="{{old('start_date')}}">
-                </div>
-                <div class="form-group">
-                    <label for="">End Date</label>
-                    <input type="date" name="end_date" class="form-control" value="{{old('end_date')}}">
                 </div>
 
                 <div class="d-flex justify-content-center">
@@ -75,6 +106,6 @@
     $(document).ready(function() {
 
     });
-    $('#tag,#programming').select2();
+    $('#singer,#mg').select2();
 </script>
 @endsection

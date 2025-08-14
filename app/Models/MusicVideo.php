@@ -12,11 +12,11 @@ class MusicVideo extends Model
 
     public function singer()
     {
-        return $this->belongsToMany(Singer::class, 'music_video_singer');
+        return $this->belongsToMany(Singer::class, 'music_video_singer','music_video_id','singer_id');
     }
 
     public function genre()
     {
-        return $this->belongsToMany(MusicGenre::class, 'music_video_genre');
+        return $this->belongsToMany(MusicGenre::class, 'music_video_genre','music_video_id','music_genre_id');
     }
 }

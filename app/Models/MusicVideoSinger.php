@@ -5,13 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MusicGenre extends Model
+class MusicVideoSinger extends Model
 {
     use HasFactory;
     protected $guarded = [];
-
-    public function musicVideos()
-    {
-        return $this->belongsToMany(MusicVideo::class, 'music_video_genre');
-    }
 }

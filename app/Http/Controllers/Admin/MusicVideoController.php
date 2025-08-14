@@ -27,10 +27,19 @@ class MusicVideoController extends Controller
 
     public function detail($id)
     {
-        $mv = MusicVideo::findOrFail($id);
+        $mv = MusicVideo::with('singer','genre')->findOrFail($id);
         // Add image_url to the response
-        $mv->image_url = $mv->image_url;
-        return response()->json($mv);
+        return response()->json([
+            'id' => $mv->id,
+            'title' => $mv->title,
+            'description' => $mv->description,
+            'thumbnail_url' => $mv->thumbnail_url,
+            'music_url' => $mv->music_url,
+            'duration' => $mv->duration,
+            'file_size' => $mv->file_size,
+            'singers' => $mv->singer->pluck('name')->toArray(),
+            'genres' => $mv->genre->pluck('name')->toArray(),
+        ]);
     }
 
     public function ssd()
@@ -38,14 +47,57 @@ class MusicVideoController extends Controller
         $mv = MusicVideo::query();
 
         return DataTables::of($mv)
+            ->addColumn('singer', function ($each) {
+                // join all singer names into one string
+                return $each->singer->pluck('name')->join(', ');
+            })
+            ->addColumn('music_url', function ($each) {
+                if ($each->music_url) {
+                    return '<button 
+                    class="btn btn-sm btn-primary play-audio" 
+                    data-url="' . e($each->music_url) . '">
+                     <i class="fas fa-music"></i> Listen
+                </button>';
+                }
+                return '-';
+            })
+            ->addColumn('file_size', function ($each) {
+                if ($each->music_url) {
+                    try {
+                        // Get file size from the URL
+                        $headers = get_headers($each->music_url, 1);
+                        if (isset($headers['Content-Length'])) {
+                            $size = (int) $headers['Content-Length']; // in bytes
+                            // Convert to KB or MB
+                            if ($size >= 1048576) {
+                                return round($size / 1048576, 2) . ' MB';
+                            } elseif ($size >= 1024) {
+                                return round($size / 1024, 2) . ' KB';
+                            } else {
+                                return $size . ' bytes';
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        return '-';
+                    }
+                }
+                return '-';
+            })
+            ->addColumn('duration', function ($each) {
+                if (!$each->duration) return '-';
+                $minutes = floor($each->duration / 60);
+                $seconds = $each->duration % 60;
+                return sprintf("%d:%02d", $minutes, $seconds);
+            })
             ->addColumn('action', function ($each) {
                 $detail_icon = '<a href="#" class="text-success detail" data-id="' . $each->id . '"><i class="fas fa-eye"></i></a>';
-                $edit_icon = '<a href="' . url('admin/mv/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
+                $edit_icon = '<a href="' . url('admin/music-video/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
                 $delete_icon = '<button type="button" class="btn btn-link text-danger p-0 delete-mv" data-id="' . $each->id . '" data-image="' . $each->image . '">
                 <i class="fas fa-trash-alt"></i>
                 </button>';
                 return '<div class="action-icon">' . $detail_icon . $edit_icon . $delete_icon . '</div>';
             })
+            ->rawColumns(['music_url', 'action'])
             ->make(true);
     }
 
@@ -53,7 +105,7 @@ class MusicVideoController extends Controller
     {
         $singers = Singer::all();
         $mgs = MusicGenre::all();
-        return view('backend.music_video.create',compact('singers','mgs'));
+        return view('backend.music_video.create', compact('singers', 'mgs'));
     }
 
     public function store(Request $request)
@@ -72,17 +124,19 @@ class MusicVideoController extends Controller
         // Upload music file to Cloudinary
         $uploadedMusic = Cloudinary::uploadFile(
             $request->file('music')->getRealPath(),
-            ['resource_type' => 'auto']
+            ['resource_type' => 'video']
         );
 
-        $musicUrl = $uploadedMusic->getSecurePath();
-        $duration = $uploadedMusic->getDuration(); // seconds
-        $musicSize = $uploadedMusic->getSize(); // bytes
+        $response = $uploadedMusic->getResponse();
+
+        $musicUrl  = $response['secure_url'] ?? null;
+        $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
+        $musicSize = $response['bytes'] ?? null;    // in bytes
 
         // Upload image to Cloudinary
         $uploadedImage = Cloudinary::upload(
             $request->file('photo')->getRealPath()
-        );
+        )->getSecurePath();
 
         // Save to database
         $createdMV = MusicVideo::create([
@@ -97,7 +151,7 @@ class MusicVideoController extends Controller
         ]);
 
         $createdMV->singer()->sync($request->singer);
-        $createdMV->mg()->sync($request->mg);
+        $createdMV->genre()->sync($request->mg);
 
         return redirect('admin/music-video')->with('success', 'Successfully Created Music Video');
     }
@@ -109,43 +163,88 @@ class MusicVideoController extends Controller
 
     public function edit(string $id)
     {
-        $ads = Ads::findOrFail($id);
-        return view('backend.ads.edit', compact('ads'));
+        $mv = MusicVideo::with('singer', 'genre')->findOrFail($id);
+        $singers = Singer::all();
+        $mgs = MusicGenre::all();
+        return view('backend.music_video.edit', compact('mv', 'singers', 'mgs'));
     }
 
     public function update(Request $request, string $id)
     {
-        $ads = Ads::findOrFail($id);
+        $mv = MusicVideo::findOrFail($id);
         $request->validate([
-            'title' => 'string|max:30',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'title' => 'required|string|max:30',
+            'singer' => 'required',
+            'mg' => 'required',
+            'music' => 'file|mimes:mp3',
+            'video_link'  => 'nullable|string',
+            'description' => 'nullable|string',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png',
+            'status'      => 'required|in:0,1,2',
         ]);
-        if ($request->file('image')) {
-            $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
-        } else {
-            $uploadedFileUrl = $ads->image_url; // keep old image
-        }
-        $ads->update([
-            'title' => $request->title,
-            'description' => strip_tags($request->description),
-            'image_url' => $uploadedFileUrl, // Save only the path
-            'link' => $request->link,
-            'status' => $request->status ? 1 : 0,
-            'start_date' => $request->start_date ? Carbon::parse($request->start_date) : null,
-            'end_date' => $request->end_date ? Carbon::parse($request->end_date) : null,
-        ]);
+        if ($request->file('music')) {
+            Cloudinary::destroy($mv->music_url);
+            $uploadedMusic = Cloudinary::uploadFile(
+                $request->file('music')->getRealPath(),
+                ['resource_type' => 'video']
+            );
+            $response = $uploadedMusic->getResponse();
 
-        return redirect('admin/ads')->with('success', 'Successfully Updated Ads');
+            $musicUrl  = $response['secure_url'] ?? null;
+            $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
+            $musicSize = $response['bytes'] ?? null;    // in bytes
+        } else {
+            $uploadedMusic = $mv->music_url; // keep old image
+            $musicUrl = $mv->music_url;
+            $duration = $mv->duration;
+            $musicSize = $mv->file_size;
+        }
+        if ($request->file('photo')) {
+            Cloudinary::destroy($mv->thumbnail_url);
+            $uploadedImage = Cloudinary::upload(
+                $request->file('photo')->getRealPath()
+            )->getSecurePath();
+        } else {
+            $uploadedImage = $mv->thumbnail_url;
+        }
+        $mv->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'thumbnail_url' => $uploadedImage,
+            'duration' => $duration, // store as seconds
+            'file_size' => $musicSize, // bytes
+            'status' => $request->status,
+            'music_url' => $musicUrl,
+            'video_link' => $request->video_link,
+        ]);
+        $mv->singer()->sync($request->singer);
+        $mv->genre()->sync($request->mg);
+        return redirect('admin/music-video')->with('success', 'Successfully Updated Music Video');
     }
 
     public function destroy(string $id)
     {
-        $ads = Ads::findOrFail($id);
-        // Delete image from Cloudinary
-        if ($ads->image) {
-            Cloudinary::destroy($ads->image); // Use public_id, not URL
+        $mv = MusicVideo::findOrFail($id);
+
+        // Delete music from Cloudinary (audio is considered a video resource)
+        if ($mv->music_url) {
+            $publicId = pathinfo(parse_url($mv->music_url, PHP_URL_PATH), PATHINFO_FILENAME);
+            Cloudinary::destroy($publicId, ['resource_type' => 'video']);
         }
-        $ads->delete();
-        return redirect()->back()->with('success', 'Ads deleted successfully.');
+
+        // Delete image from Cloudinary
+        if ($mv->thumbnail_url) {
+            $publicId = pathinfo(parse_url($mv->thumbnail_url, PHP_URL_PATH), PATHINFO_FILENAME);
+            Cloudinary::destroy($publicId);
+        }
+
+        // Detach relations
+        $mv->singer()->sync([]);
+        $mv->genre()->sync([]);
+
+        // Delete the record
+        $mv->delete();
+
+        return redirect()->back()->with('success', 'Music video deleted successfully.');
     }
 }

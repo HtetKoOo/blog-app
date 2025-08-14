@@ -28,7 +28,7 @@
                         <th>Title</th>
                         <th>Singer</th>
                         <th>Music mp3 file</th>
-                        <th>Music Video Link</th>
+                        <th>File Size</th>
                         <th>Duration</th>
                         <th>Action</th>
                     </tr>
@@ -64,8 +64,8 @@
                     name: "music_url",
                 },
                 {
-                    data: "video_link",
-                    name: "video_link",
+                    data: "file_size",
+                    name: "file_size",
                 },
                 {
                     data: "duration",
@@ -80,6 +80,22 @@
             ],
         });
 
+        // for mp3 player to listen
+        // Open modal and play audio
+        $(document).on('click', '.play-audio', function() {
+            let audioUrl = $(this).data('url');
+            $('#audioSource').attr('src', audioUrl);
+            $('#audioPlayer')[0].load();
+            $('#audioModal').modal('show');
+        });
+        // Stop and reset audio when modal closes
+        $('#audioModal').on('hidden.bs.modal', function() {
+            let audio = $('#audioPlayer')[0];
+            audio.pause();
+            audio.currentTime = 0;
+        });
+
+        // Delete Music Video modal
         $(document).on('click', '.delete-mv', function() {
             var id = $(this).data('id');
             var form = $('#delete-mv-form');
@@ -90,12 +106,36 @@
         // Add inside your $(document).ready(function() { ... });
         $(document).on('click', '.detail', function() {
             var id = $(this).data('id');
+
             $.get('/admin/music-video/' + id + '/detail', function(mv) {
+                // Convert duration to mm:ss
+                let durationText = '-';
+                if (mv.duration) {
+                    let minutes = Math.floor(mv.duration / 60);
+                    let seconds = mv.duration % 60;
+                    durationText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+                }
+
+                // Convert file size
+                let sizeText = '-';
+                if (mv.file_size) {
+                    let size = parseInt(mv.file_size);
+                    if (size >= 1048576) sizeText = (size / 1048576).toFixed(2) + ' MB';
+                    else if (size >= 1024) sizeText = (size / 1024).toFixed(2) + ' KB';
+                    else sizeText = size + ' bytes';
+                }
+
+                // Generate HTML
                 let html = `
             <strong>Title:</strong> ${mv.title}<br>
-            <strong>Description:</strong> ${mv.description}<br>
-            <img src="${mv.image_url}" class="img-fluid mt-2" alt="Ads Image">
-            `;
+            <strong>Description:</strong> ${mv.description || '-'}<br>
+            <strong>Singers:</strong> ${mv.singers.join(', ')}<br>
+            <strong>Genres:</strong> ${mv.genres.join(', ')}<br>
+            <strong>Duration:</strong> ${durationText}<br>
+            <strong>File Size:</strong> ${sizeText}<br>
+            <img src="${mv.thumbnail_url}" class="img-fluid mt-2 mb-2" alt="Thumbnail">
+        `;
+
                 $('#mv-detail-content').html(html);
                 $('#mvDetailModal').modal('show');
             });
@@ -105,19 +145,17 @@
 @endsection
 
 <!-- MV Detail Modal -->
-<div class="modal fade" id="mvDetailModal" tabindex="-1" role="dialog" aria-labelledby="mvDetailModalLabel" aria-hidden="true">
+<div class="modal fade" id="mvDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="mvDetailModalLabel">Music Video Detail</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Details will be loaded here -->
-                <div id="mv-detail-content"></div>
-            </div>
+        <div class="modal-content p-2" style="border-radius: 8px;">
+            <button type="button" class="close ml-auto mr-1 mt-1" data-dismiss="modal" aria-label="Close" style="font-size: 1.5rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="mv-detail-content"></div>
+            <audio id="audioPlayer" controls style="width: 100%; display:none;">
+                <source id="audioSource" src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
         </div>
     </div>
 </div>
@@ -144,5 +182,25 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Audio Player Modal -->
+<div class="modal fade" id="audioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog column">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Listen to Music</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <audio id="audioPlayer" controls style="width: 100%;">
+                    <source id="audioSource" src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
     </div>
 </div>
