@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
-use App\Models\Tag;
-use App\Models\Article;
-use App\Models\Programming;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MusicGenre;
@@ -27,18 +22,18 @@ class MusicVideoController extends Controller
 
     public function detail($id)
     {
-        $mv = MusicVideo::with('singer', 'genre')->findOrFail($id);
-        // Add image_url to the response
+        $mv = MusicVideo::with(['singer', 'genre'])->findOrFail($id);
+
         return response()->json([
             'id' => $mv->id,
             'title' => $mv->title,
-            'description' => $mv->description,
-            'thumbnail_url' => $mv->thumbnail_url,
-            'music_url' => $mv->music_url,
-            'duration' => $mv->duration,
-            'file_size' => $mv->file_size,
-            'singers' => $mv->singer->pluck('name')->toArray(),
-            'genres' => $mv->genre->pluck('name')->toArray(),
+            'description' => $mv->description ?? '-',
+            'thumbnail_url' => $mv->thumbnail_url ?? null,
+            'music_url' => $mv->music_url ?? null,
+            'duration' => $mv->duration ?? null,
+            'file_size' => $mv->file_size ?? null,
+            'singers' => $mv->singer ? $mv->singer->pluck('name')->toArray() : [],
+            'genres' => $mv->genre ? $mv->genre->pluck('name')->toArray() : [],
         ]);
     }
 
@@ -112,46 +107,41 @@ class MusicVideoController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:30',
-            'singer' => 'required',
-            'mg' => 'required',
+            'singer' => 'required|array|min:1',
+            'mg' => 'required|array|min:1',
             'music' => 'required|file|mimes:mp3',
             'video_link'  => 'nullable|string',
             'description' => 'nullable|string',
             'photo'       => 'nullable|image|mimes:jpg,jpeg,png',
             'status'      => 'required|in:0,1,2',
         ]);
+        // Initialize variables
+        $musicUrl = null;
+        $duration = null;
+        $musicSize = null;
+        $uploadedImage = null;
 
         // Upload music file to Cloudinary
-        try {
-            $uploadedMusic = Cloudinary::uploadFile(
-                $request->file('music')->getRealPath(),
-                ['resource_type' => 'video']
-            );
-            $response = $uploadedMusic->getResponse();
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-        }
+        $uploadedMusic = Cloudinary::uploadFile($request->file('music')->getRealPath(), ['resource_type' => 'video']);
 
-
+        $response = $uploadedMusic->getResponse();
         $musicUrl  = $response['secure_url'] ?? null;
         $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
         $musicSize = $response['bytes'] ?? null;    // in bytes
 
         // Upload image to Cloudinary
-        $uploadedImage = Cloudinary::upload(
-            $request->file('photo')->getRealPath()
-        )->getSecurePath();
+        $uploadedImage = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
 
         // Save to database
         $createdMV = MusicVideo::create([
             'title' => $request->title,
-            'description' => $request->description,
+            'description' => $request->description ?? null,
             'thumbnail_url' => $uploadedImage,
             'duration' => $duration, // store as seconds
             'file_size' => $musicSize, // bytes
             'status' => $request->status,
             'music_url' => $musicUrl,
-            'video_link' => $request->video_link,
+            'video_link' => $request->video_link ?? null,
         ]);
 
         $createdMV->singer()->sync($request->singer);
@@ -178,51 +168,52 @@ class MusicVideoController extends Controller
         $mv = MusicVideo::findOrFail($id);
         $request->validate([
             'title' => 'required|string|max:30',
-            'singer' => 'required',
-            'mg' => 'required',
-            'music' => 'file|mimes:mp3',
+            'singer' => 'required|array|min:1',
+            'mg' => 'required|array|min:1',
+            'music' => 'nullable|file|mimes:mp3',
             'video_link'  => 'nullable|string',
             'description' => 'nullable|string',
             'photo'       => 'nullable|image|mimes:jpg,jpeg,png',
             'status'      => 'required|in:0,1,2',
         ]);
-        if ($request->file('music')) {
-            Cloudinary::destroy($mv->music_url);
-            $uploadedMusic = Cloudinary::uploadFile(
-                $request->file('music')->getRealPath(),
-                ['resource_type' => 'video']
-            );
-            $response = $uploadedMusic->getResponse();
+        $musicUrl = $mv->music_url;
+        $duration = $mv->duration;
+        $musicSize = $mv->file_size;
+        $uploadedMusic = $mv->thumbnail_url;
+        if ($request->hasFile('music')) {
+            if ($mv->music_url) {
+                $publicId = pathinfo(parse_url($mv->music_url, PHP_URL_PATH), PATHINFO_FILENAME);
+                Cloudinary::destroy($publicId, ['resource_type' => 'video']);
+            }
+            // Upload music file to Cloudinary
+            $uploadedMusic = Cloudinary::uploadFile($request->file('music')->getRealPath(), ['resource_type' => 'video']);
 
+            $response = $uploadedMusic->getResponse();
             $musicUrl  = $response['secure_url'] ?? null;
             $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
             $musicSize = $response['bytes'] ?? null;    // in bytes
-        } else {
-            $uploadedMusic = $mv->music_url; // keep old image
-            $musicUrl = $mv->music_url;
-            $duration = $mv->duration;
-            $musicSize = $mv->file_size;
         }
-        if ($request->file('photo')) {
-            Cloudinary::destroy($mv->thumbnail_url);
-            $uploadedImage = Cloudinary::upload(
-                $request->file('photo')->getRealPath()
-            )->getSecurePath();
-        } else {
-            $uploadedImage = $mv->thumbnail_url;
+        if ($request->hasFile('photo')) {
+            if ($mv->thumbnail_url) {
+                $publicId = pathinfo(parse_url($mv->thumbnail_url, PHP_URL_PATH), PATHINFO_FILENAME);
+                Cloudinary::destroy($publicId);
+            }
+            $thumbnailUrl = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
         }
+        // Update safely
         $mv->update([
             'title' => $request->title,
-            'description' => $request->description,
-            'thumbnail_url' => $uploadedImage,
-            'duration' => $duration, // store as seconds
-            'file_size' => $musicSize, // bytes
+            'description' => $request->description ?? null,
+            'thumbnail_url' => $thumbnailUrl,
+            'duration' => $duration,
+            'file_size' => $musicSize,
             'status' => $request->status,
             'music_url' => $musicUrl,
-            'video_link' => $request->video_link,
+            'video_link' => $request->video_link ?? null,
         ]);
-        $mv->singer()->sync($request->singer);
-        $mv->genre()->sync($request->mg);
+        // Sync relations safely
+        $mv->singer()->sync($request->singer ?? []);
+        $mv->genre()->sync($request->mg ?? []);
         return redirect('admin/music-video')->with('success', 'Successfully Updated Music Video');
     }
 

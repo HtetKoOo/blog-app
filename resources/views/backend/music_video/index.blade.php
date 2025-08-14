@@ -81,16 +81,16 @@
         });
 
         // for mp3 player to listen
-        // Open modal and play audio
         $(document).on('click', '.play-audio', function() {
             let audioUrl = $(this).data('url');
-            $('#audioSource').attr('src', audioUrl);
-            $('#audioPlayer')[0].load();
+            $('#listenAudioSource').attr('src', audioUrl);
+            let audio = $('#listenAudioPlayer')[0];
+            audio.load();
+            audio.play();
             $('#audioModal').modal('show');
         });
-        // Stop and reset audio when modal closes
         $('#audioModal').on('hidden.bs.modal', function() {
-            let audio = $('#audioPlayer')[0];
+            let audio = $('#listenAudioPlayer')[0];
             audio.pause();
             audio.currentTime = 0;
         });
@@ -108,15 +108,13 @@
             var id = $(this).data('id');
 
             $.get('/admin/music-video/' + id + '/detail', function(mv) {
-                // Convert duration to mm:ss
+                // Convert duration and file size
                 let durationText = '-';
                 if (mv.duration) {
                     let minutes = Math.floor(mv.duration / 60);
                     let seconds = mv.duration % 60;
                     durationText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
                 }
-
-                // Convert file size
                 let sizeText = '-';
                 if (mv.file_size) {
                     let size = parseInt(mv.file_size);
@@ -125,7 +123,7 @@
                     else sizeText = size + ' bytes';
                 }
 
-                // Generate HTML
+                // HTML
                 let html = `
             <strong>Title:</strong> ${mv.title}<br>
             <strong>Description:</strong> ${mv.description || '-'}<br>
@@ -152,10 +150,6 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div id="mv-detail-content"></div>
-            <audio id="audioPlayer" controls style="width: 100%; display:none;">
-                <source id="audioSource" src="" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
         </div>
     </div>
 </div>
@@ -196,8 +190,8 @@
                 </button>
             </div>
             <div class="modal-body text-center">
-                <audio id="audioPlayer" controls style="width: 100%;">
-                    <source id="audioSource" src="" type="audio/mpeg">
+                <audio id="listenAudioPlayer" controls style="width: 100%;">
+                    <source id="listenAudioSource" src="${mv.music_url}" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
             </div>
