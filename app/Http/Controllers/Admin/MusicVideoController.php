@@ -27,7 +27,7 @@ class MusicVideoController extends Controller
 
     public function detail($id)
     {
-        $mv = MusicVideo::with('singer','genre')->findOrFail($id);
+        $mv = MusicVideo::with('singer', 'genre')->findOrFail($id);
         // Add image_url to the response
         return response()->json([
             'id' => $mv->id,
@@ -122,12 +122,16 @@ class MusicVideoController extends Controller
         ]);
 
         // Upload music file to Cloudinary
-        $uploadedMusic = Cloudinary::uploadFile(
-            $request->file('music')->getRealPath(),
-            ['resource_type' => 'video']
-        );
+        try {
+            $uploadedMusic = Cloudinary::uploadFile(
+                $request->file('music')->getRealPath(),
+                ['resource_type' => 'video']
+            );
+            $response = $uploadedMusic->getResponse();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
 
-        $response = $uploadedMusic->getResponse();
 
         $musicUrl  = $response['secure_url'] ?? null;
         $duration  = $response['duration'] ?? null; // in seconds, only for video/audio
