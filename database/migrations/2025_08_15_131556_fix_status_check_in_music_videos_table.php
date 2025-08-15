@@ -12,15 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop the old check constraint
-        DB::statement("ALTER TABLE music_videos DROP CONSTRAINT IF EXISTS music_videos_status_check");
+        // Step 0: convert status to string to handle old values
+        DB::statement("ALTER TABLE music_videos MODIFY COLUMN status VARCHAR(10)");
 
-        // Add the new check constraint
-        DB::statement("ALTER TABLE music_videos ADD CONSTRAINT music_videos_status_check CHECK (status IN (0, 1))");
+        // Step 1: convert old string values to numeric
+        DB::statement("UPDATE music_videos SET status = '1' WHERE status = 'active'");
+        DB::statement("UPDATE music_videos SET status = '0' WHERE status = 'inactive'");
+
+        // Step 2: modify column to TINYINT(1)
+        DB::statement("ALTER TABLE music_videos MODIFY COLUMN status TINYINT(1) NOT NULL");
+
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE music_videos DROP CONSTRAINT IF EXISTS music_videos_status_check");
+        // Optionally convert back to original state
+        DB::statement("ALTER TABLE music_videos MODIFY COLUMN status VARCHAR(10)");
     }
 };
