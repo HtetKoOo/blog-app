@@ -19,13 +19,15 @@ Route::get('article/{id}','User\ArticleController@detail')->name('article.detail
 
 Route::get('logout', 'User\AuthController@logout')->name('logout')->middleware('auth');
 
-
 Route::namespace('User')->middleware('auth')->group(function(){
     Route::get('/', 'PageController@home')->name('home');
     Route::get('/profile', 'ProfileController@showProfile')->name('showProfile');
+
+    Route::get('/music', 'MusicController@all')->name('music.all');
+    Route::get('music/{id}', 'MusicController@detail')->name('music.detail');
 });
 
-//api
+//api for article detail
 Route::prefix('api')->namespace('Api')->group(function(){
     Route::post('/article-comment', 'ArticleApi@makeComment');
     Route::post('/article-like', 'ArticleApi@like');
@@ -35,6 +37,7 @@ Route::prefix('api')->namespace('Api')->group(function(){
 
 
 //_____________________________________________________________________________________________
+///////////////////////////////////////////////////////////////////////////////////////////////
 //_____________________________________________________________________________________________
 
 

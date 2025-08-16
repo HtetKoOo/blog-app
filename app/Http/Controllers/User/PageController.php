@@ -11,6 +11,6 @@ class PageController extends Controller
     public function home()
     {
         $ads = Ads::latest()->take(5)->get();
-        return view('user.home',compact('ads'));
+        return view('user.article.home',compact('ads'));
     }
 }
