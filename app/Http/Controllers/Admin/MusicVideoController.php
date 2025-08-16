@@ -30,10 +30,9 @@ class MusicVideoController extends Controller
             'description' => $mv->description ?? '-',
             'thumbnail_url' => $mv->thumbnail_url ?? null,
             'music_url' => $mv->music_url ?? null,
-            'duration' => $mv->duration ?? null,
-            'file_size' => $mv->file_size ?? null,
             'singers' => $mv->singer ? $mv->singer->pluck('name')->toArray() : [],
             'genres' => $mv->genre ? $mv->genre->pluck('name')->toArray() : [],
+            'video_link' => $mv->video_link ?? '-',
         ]);
     }
 
@@ -78,12 +77,6 @@ class MusicVideoController extends Controller
                 }
                 return '-';
             })
-            ->addColumn('duration', function ($each) {
-                if (!$each->duration) return '-';
-                $minutes = floor($each->duration / 60);
-                $seconds = $each->duration % 60;
-                return sprintf("%d:%02d", $minutes, $seconds);
-            })
             ->addColumn('action', function ($each) {
                 $detail_icon = '<a href="#" class="text-success detail" data-id="' . $each->id . '"><i class="fas fa-eye"></i></a>';
                 $edit_icon = '<a href="' . url('admin/music-video/' . $each->id . '/edit') . '" class="text-warning"><i class="fas fa-edit"></i></a>';
@@ -110,15 +103,12 @@ class MusicVideoController extends Controller
             'singer' => 'required|array|min:1',
             'mg' => 'required|array|min:1',
             'music' => 'required|file|mimes:mp3',
-            'video_link'  => 'nullable|string',
-            'description' => 'nullable|string',
+            'video_link'  => 'nullable',
+            'description' => 'nullable',
             'photo'       => 'nullable|image|mimes:jpg,jpeg,png',
-            'status'      => 'required|in:0,1,2',
         ]);
         // Initialize variables
         $musicUrl = null;
-        $duration = null;
-        $musicSize = null;
         $uploadedImage = null;
 
         // Upload music file to Cloudinary
@@ -127,13 +117,6 @@ class MusicVideoController extends Controller
         $response = $uploadedMusic->getResponse();
         $musicUrl  = $response['secure_url'] ?? null;
         // Duration: round to whole seconds so Postgres INT accepts it
-        $duration  = isset($response['duration'])
-            ? (int) round($response['duration'])
-            : null;
-        // File size: store as integer bytes (BIGINT column in DB)
-        $musicSize = isset($response['bytes'])
-            ? (int) $response['bytes']
-            : null;
 
         // Upload image to Cloudinary
         $uploadedImage = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
@@ -143,9 +126,6 @@ class MusicVideoController extends Controller
             'title' => $request->title,
             'description' => $request->description ?? null,
             'thumbnail_url' => $uploadedImage,
-            'duration' => $duration, // store as seconds
-            'file_size' => $musicSize, // bytes
-            'status' => $request->status,
             'music_url' => $musicUrl,
             'video_link' => $request->video_link ?? null,
         ]);
@@ -177,14 +157,11 @@ class MusicVideoController extends Controller
             'singer' => 'required|array|min:1',
             'mg' => 'required|array|min:1',
             'music' => 'nullable|file|mimes:mp3',
-            'video_link'  => 'nullable|string',
-            'description' => 'nullable|string',
+            'video_link'  => 'nullable',
+            'description' => 'nullable',
             'photo'       => 'nullable|image|mimes:jpg,jpeg,png',
-            'status'      => 'required|in:0,1,2',
         ]);
         $musicUrl = $mv->music_url;
-        $duration = $mv->duration;
-        $musicSize = $mv->file_size;
         $uploadedImage = $mv->thumbnail_url;
         if ($request->hasFile('music')) {
             if ($mv->music_url) {
@@ -196,14 +173,6 @@ class MusicVideoController extends Controller
 
             $response = $uploadedMusic->getResponse();
             $musicUrl  = $response['secure_url'] ?? null;
-            // Duration integer
-            $duration  = isset($response['duration'])
-                ? (int) round($response['duration'])
-                : null;
-            // File size integer
-            $musicSize = isset($response['bytes'])
-                ? (int) $response['bytes']
-                : null;
         }
         if ($request->hasFile('photo')) {
             if ($mv->thumbnail_url) {
@@ -217,9 +186,6 @@ class MusicVideoController extends Controller
             'title' => $request->title,
             'description' => $request->description ?? null,
             'thumbnail_url' => $uploadedImage,
-            'duration' => $duration,
-            'file_size' => $musicSize,
-            'status' => $request->status,
             'music_url' => $musicUrl,
             'video_link' => $request->video_link ?? null,
         ]);

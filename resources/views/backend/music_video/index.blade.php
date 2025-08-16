@@ -28,8 +28,6 @@
                         <th>Title</th>
                         <th>Singer</th>
                         <th>Music mp3 file</th>
-                        <th>File Size</th>
-                        <th>Duration</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -62,14 +60,6 @@
                 {
                     data: "music_url",
                     name: "music_url",
-                },
-                {
-                    data: "file_size",
-                    name: "file_size",
-                },
-                {
-                    data: "duration",
-                    name: "duration",
                 },
                 {
                     data: "action",
@@ -107,33 +97,16 @@
         $(document).on('click', '.detail', function() {
             var id = $(this).data('id');
 
-            $.get('/admin/music-video/' + id + '/detail', function(mv) {
-                // Convert duration and file size
-                let durationText = '-';
-                if (mv.duration) {
-                    let minutes = Math.floor(mv.duration / 60);
-                    let seconds = mv.duration % 60;
-                    durationText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
-                }
-                let sizeText = '-';
-                if (mv.file_size) {
-                    let size = parseInt(mv.file_size);
-                    if (size >= 1048576) sizeText = (size / 1048576).toFixed(2) + ' MB';
-                    else if (size >= 1024) sizeText = (size / 1024).toFixed(2) + ' KB';
-                    else sizeText = size + ' bytes';
-                }
-
+            $.get('/admin/music-video/' + id + '/detail', function(mv) {                
                 // HTML
                 let html = `
             <strong>Title:</strong> ${mv.title}<br>
             <strong>Description:</strong> ${mv.description || '-'}<br>
             <strong>Singers:</strong> ${mv.singers.join(', ')}<br>
             <strong>Genres:</strong> ${mv.genres.join(', ')}<br>
-            <strong>Duration:</strong> ${durationText}<br>
-            <strong>File Size:</strong> ${sizeText}<br>
+            <strong>Video Link:</strong> ${mv.video_link || '-'}<br>
             <img src="${mv.thumbnail_url}" class="img-fluid mt-2 mb-2" alt="Thumbnail">
         `;
-
                 $('#mv-detail-content').html(html);
                 $('#mvDetailModal').modal('show');
             });

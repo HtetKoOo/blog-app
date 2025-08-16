@@ -58,14 +58,6 @@
                     <label for="">Music Video Photo</label>
                     <input type="file" name="photo" class="form-control">
                 </div>
-                <div class="form-group">
-                    <label for="">Status</label>
-                    <select name="status" class="form-control">
-                        <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Inactive</option>
-                        <option value="2" {{ old('status') == 2 ? 'selected' : '' }}>Deleted</option>
-                    </select>
-                </div>
 
                 <div class="d-flex justify-content-center">
                     <button class="btn btn-secondary mr-2 back-btn">Cancel</button>
