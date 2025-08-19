@@ -1,4 +1,4 @@
-@extends('user.layouts.app')
+@extends('user.layouts.article_layout')
 @section('content')
 <div class="bg-card p-3 mt-3 rounded">
     <form action="{{url('login')}}" method="POST">

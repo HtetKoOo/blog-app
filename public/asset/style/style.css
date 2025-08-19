@@ -15,3 +15,20 @@ html {
 .bx {
   font-size: 20px;
 }
+
+
+#music_side_list{
+  color: white;
+}
+#music_side_list>li{
+  padding: 8px 16px;
+}
+#music_side_list a{
+  font-size: 18px;
+}
+.list_title{
+  font-size: 24px;
+}
+#music_side_list i{
+  margin-right: 10%;
+}

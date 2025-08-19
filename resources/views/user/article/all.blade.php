@@ -1,9 +1,9 @@
-@extends('user.layouts.app')
+@extends('user.layouts.article_layout')
 @section('content')
 <div class="mt-4">
     <form action="" class="d-flex">
         <input placeholder="Search Blog..." type="text" name="title" class="form-control rounded bg-card">
-        <input type="submit" value="Search" class="btn btn-primary rounded ml-2">
+        <input type="submit" value="Searchh" class="btn btn-primary rounded ml-2">
     </form>
 </div>
 <div class="mt-4 blog-list">

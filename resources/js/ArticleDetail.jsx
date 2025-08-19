@@ -11,6 +11,9 @@ const App = () => {
     const [commentLoader, setCommentLoader] = useState(false);
     const [likeCount, setLikeCount] = useState(article_detail.like_count);
 
+    console.log(article_detail);
+    
+    
     const addComment = () => {
         setCommentLoader(true);
         axios

@@ -45,7 +45,8 @@
             processing: true,
             serverSide: true,
             ajax: "/admin/music-video/datatable/ssd",
-            columns: [{
+            columns: [
+                {
                     data: "id",
                     name: "id",
                 },

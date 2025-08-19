@@ -1,4 +1,4 @@
-@extends('user.layouts.app')
+@extends('user.layouts.article_layout')
 
 @section('content')
 <div class="mt-4">
