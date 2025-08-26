@@ -198,7 +198,7 @@ const App = () => {
                     </div>
 
                     {/* Song List */}
-                    <div className="card bg-dark text-white p-3 rounded">
+                    <div className="card bg-dark text-white p-3 mb-5 rounded">
                         {songs.map((d, index) => (
                             <a
                                 className="mb-2"
