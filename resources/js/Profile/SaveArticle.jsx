@@ -23,7 +23,7 @@ const SaveArticle = () => {
                             <div className="mb-3" key={d.id || index}>
                                 <a
                                     href={`/article/${d.article.id}`}
-                                    className="border p-3 row rounded"
+                                    className="border p-3 rounded d-flex text-decoration-none"
                                 >
                                     <div
                                         className="col-3"
@@ -66,12 +66,17 @@ const SaveArticle = () => {
                                             }}
                                         />
                                     </div>
-                                    <div className="ml-3">
+                                    <div className="col-9 d-flex flex-column justify-content-center ml-3">
                                         <h5 className="text-white">
                                             {d.article.title}
                                         </h5>
-                                        <p className="text-muted">
-                                            {d.article.description}
+                                        <p className="text-muted mb-0">
+                                            {d.article.description.length > 50
+                                                ? d.article.description.slice(
+                                                      0,
+                                                      100
+                                                  ) + " . . ."
+                                                : d.article.description}
                                         </p>
                                     </div>
                                 </a>
