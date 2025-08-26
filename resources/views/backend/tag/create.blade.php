@@ -24,7 +24,7 @@
 
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" name="name" class="form-control">
+                    <input type="text" name="name" class="form-control" value="{{old('name')}}">
                 </div>
 
                 <div class="d-flex justify-content-center">

@@ -60,7 +60,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Image</label>
-                    <input type="file" name="image" class="form-control">
+                    <input type="file" name="image" class="form-control-file">
                     @if($article->image)
                     <img src="{{ $article->image_url }}" alt="Article Image" class="img-thumbnail mt-2" style="max-width: 200px;">
                     @endif

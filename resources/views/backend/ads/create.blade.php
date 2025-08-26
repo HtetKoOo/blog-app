@@ -32,7 +32,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Image (only choose image file)</label>
-                    <input type="file" name="image" class="form-control">
+                    <input type="file" name="image" class="form-control-file" required>
                 </div>
                 <div class="form-group">
                     <label for="">Link</label>

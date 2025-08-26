@@ -26,7 +26,8 @@
                     <label for="">Choose tags</label>
                     <select name="tag[]" class="form-control" id="tag" multiple>
                         @foreach($tags as $tag)
-                        <option value="{{$tag->id}}">{{$tag->name}}</option>
+                        <option value="{{$tag->id}}"
+                            {{ (collect(old('tag'))->contains($tag->id)) ? 'selected' : '' }}>{{$tag->name}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -35,8 +36,10 @@
                     <label for="">Choose programmings</label>
                     <select name="programming[]" class="form-control" id="programming" multiple>
                         @foreach($programmings as $programming)
-                        <option value="{{$programming->id}}">{{$programming->name}}</option>
-                        @endforeach
+                        <option value="{{ $programming->id }}"
+                            {{ (collect(old('programming'))->contains($programming->id)) ? 'selected' : '' }}>
+                            {{ $programming->name }}
+                        </option> @endforeach
                     </select>
                 </div>
 
@@ -46,7 +49,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Image (only choose image file)</label>
-                    <input type="file" name="image" class="form-control">
+                    <input type="file" name="image" class="form-control-file" required>
                 </div>
                 <div class="form-group">
                     <label for="">Description</label>
@@ -69,7 +72,7 @@
     $(document).ready(function() {
 
     });
-    
+
     $('#tag,#programming').select2();
 </script>
 @endsection

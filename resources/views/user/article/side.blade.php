@@ -31,13 +31,37 @@
         <h5 class="text-primary"> Top Trending Articles</h5>
         <div class="row">
             @foreach($trendingArticles as $a)
-            <div class="col-6">
+            <a href="{{url('article/'.$a->id)}}" class="col-6">
                 <div class="bg-dark rounded">
-                    <img src="{{$a->image_url}}"
-                        class="w-100 rounded">
+                    <div style="
+                    position:relative;
+                    width:100%;
+                    height: 100px;
+                    border-radius:15px;
+                    overflow:hidden;
+                    display:flex;
+                    align-items:center;   /* vertical centering */
+                    justify-content:center; /* optional: horizontal centering */
+                    ">
+                        <!-- blurred background -->
+                        <div style="
+                        background:url('{{$a->image_url}}') center center / cover no-repeat;
+                        filter: blur(20px);
+                        position:absolute;
+                        top:0; left:0; right:0; bottom:0;
+                        z-index:0;
+                        ">
+                        </div>
+
+                        <!-- actual image -->
+                        <img
+                            src="{{$a->image_url}}"
+                            alt="Article Image"
+                            style="width:100%; height:100%; object-fit:contain; object-position:center; position:relative; z-index:1; display:block;">
+                    </div>
                     <p class="text-white text-center p-2">{{$a->title}}</p>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
     </div>
@@ -46,13 +70,37 @@
         <h5 class="text-primary"> Most Love Articles</h5>
         <div class="row">
             @foreach($popularArticles as $a)
-            <div class="col-6">
+            <a href="{{url('article/'.$a->id)}}" class="col-6">
                 <div class="bg-dark rounded">
-                    <img src="{{$a->image_url}}"
-                        class="w-100 rounded">
+                    <div style="
+                    position:relative;
+                    width:100%;
+                    height:100px;
+                    border-radius:15px;
+                    overflow:hidden;
+                    display:flex;
+                    align-items:center;   /* vertical centering */
+                    justify-content:center; /* optional: horizontal centering */
+                    ">
+                        <!-- blurred background -->
+                        <div style="
+                        background:url('{{$a->image_url}}') center center / cover no-repeat;
+                        filter: blur(20px);
+                        position:absolute;
+                        top:0; left:0; right:0; bottom:0;
+                        z-index:0;
+                        ">
+                        </div>
+
+                        <!-- actual image -->
+                        <img
+                            src="{{$a->image_url}}"
+                            alt="Article Image"
+                            style="width:100%; height:100%; object-fit:contain; object-position:center; position:relative; z-index:1; display:block;">
+                    </div>
                     <p class="text-white text-center p-2">{{$a->title}}</p>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
     </div>

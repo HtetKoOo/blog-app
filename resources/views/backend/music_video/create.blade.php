@@ -30,7 +30,7 @@
                     <label for="">Choose Singer</label>
                     <select name="singer[]" class="form-control" id="singer" multiple>
                         @foreach($singers as $singer)
-                        <option value="{{$singer->id}}">{{$singer->name}}</option>
+                        <option value="{{$singer->id}}" {{ (collect(old('singer'))->contains($singer->id)) ? 'selected' : '' }}>{{$singer->name}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -38,17 +38,17 @@
                     <label for="">Choose Music Genre</label>
                     <select name="mg[]" class="form-control" id="mg" multiple>
                         @foreach($mgs as $mg)
-                        <option value="{{$mg->id}}">{{$mg->name}}</option>
+                        <option value="{{$mg->id}}" {{ (collect(old('mg'))->contains($mg->id)) ? 'selected' : '' }}>{{$mg->name}}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="">Music mp3 file</label>
-                    <input type="file" name="music" class="form-control">
+                    <input type="file" name="music" class="form-control-file" required>
                 </div>
                 <div class="form-group">
                     <label for="">Music Video Link</label>
-                    <input type="text" name="video_link" class="form-control">
+                    <input type="text" name="video_link" class="form-control" value="{{old('video_link')}}">
                 </div>
                 <div class="form-group">
                     <label for="">Description</label>
@@ -56,7 +56,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Music Video Photo</label>
-                    <input type="file" name="photo" class="form-control">
+                    <input type="file" name="photo" class="form-control-file" required>
                 </div>
 
                 <div class="d-flex justify-content-center">

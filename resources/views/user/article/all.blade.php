@@ -9,10 +9,35 @@
 <div class="mt-4 blog-list">
     <div class="row p-0 m-0">
         @foreach($data as $d)
-        <a href="{{url('article/'.$d->id)}}" class="col-6  pl-0 mt-4">
+        <a href="{{url('article/'.$d->id)}}" class="col-6 pl-0 mt-4">
             <div class="rounded bg-card">
-                <img class="rounded" src="{{$d->image_url}}" style="width:100%" alt="Article Image">
-                <div class="p-4 text-white">
+                <div style="
+                    position:relative;
+                    width:100%;
+                    height: 250px;
+                    border-radius:20px;
+                    overflow:hidden;
+                    display:flex;
+                    align-items:center;   /* vertical centering */
+                    justify-content:center; /* optional: horizontal centering */
+                    ">
+                    <!-- blurred background -->
+                    <div style="
+                        background:url('{{$d->image_url}}') center center / cover no-repeat;
+                        filter: blur(20px);
+                        position:absolute;
+                        top:0; left:0; right:0; bottom:0;
+                        z-index:0;
+                        ">
+                    </div>
+
+                    <!-- actual image -->
+                    <img
+                        src="{{$d->image_url}}"
+                        alt="Article Image"
+                        style="width:100%; height:100%; object-fit:contain; position:relative; z-index:1; display:block;">
+                </div>
+                <div class="p-3 text-white">
                     <h4 class="text-white">{{$d->title}}</h4>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-dark"><span class="text-success"><i

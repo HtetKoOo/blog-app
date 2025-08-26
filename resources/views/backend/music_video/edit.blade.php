@@ -55,7 +55,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Music mp3 file</label>
-                    <input type="file" name="music" class="form-control">
+                    <input type="file" name="music" class="form-control-file">
                     @if ($mv->music_url)
                     <audio controls style="width: 200px;">
                         <source src="{{ $mv->music_url }}" type="audio/mpeg">
@@ -75,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Music Video Photo</label>
-                    <input type="file" name="photo" class="form-control">
+                    <input type="file" name="photo" class="form-control-file">
                     @if($mv->thumbnail_url)
                     <img src="{{ $mv->thumbnail_url }}" alt="Music Video photo" class="img-thumbnail mt-2" style="max-width: 200px;">
                     @endif
