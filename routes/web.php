@@ -33,8 +33,6 @@ Route::prefix('api')->namespace('Api')->group(function(){
     Route::post('/article-like', 'ArticleApi@like');
     Route::post('/article-save', 'ArticleApi@save');
     Route::get('/article-save', 'ArticleApi@getSave');
-
-    
 });
 
 

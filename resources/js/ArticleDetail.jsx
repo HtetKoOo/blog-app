@@ -9,10 +9,7 @@ const App = () => {
     const [comments, setComments] = useState(article_detail.comment);
     const [comment, setComment] = useState("");
     const [commentLoader, setCommentLoader] = useState(false);
-    const [likeCount, setLikeCount] = useState(article_detail.like_count);
-
-    console.log(article_detail);
-    
+    const [likeCount, setLikeCount] = useState(article_detail.like_count);    
     
     const addComment = () => {
         setCommentLoader(true);

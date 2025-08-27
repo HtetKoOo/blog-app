@@ -22,13 +22,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
-    const songs = bladeMusic;
+    const [songs, setSongs] = useState(bladeMusic);
     const [currentIndex, setCurrentIndex] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = React.useState(0.5);
-    const audioRef = React.useRef(null);
+    const audioRef = useRef(null);
+
 
     // Handle play/pause
     const handlePlayPause = () => {
@@ -83,7 +84,7 @@ const App = () => {
     };
 
     // Auto play when song changes
-    React.useEffect(() => {
+    useEffect(() => {
         if (currentIndex !== null && audioRef.current) {
             audioRef.current.volume = 0.5;
             audioRef.current.play();
@@ -177,11 +178,7 @@ const App = () => {
                 {/* Main Content */}
                 <div className="col-9">
                     <div className="row mb-3">
-                        <div>
-                            <img src="" alt="Recently Played" />
-                        </div>
                         <div className="col">
-                            <h2>Recently Played</h2>
                             <div className="d-flex">
                                 <button className="btn btn-dark d-inline-flex align-items-center me-2">
                                     <FontAwesomeIcon
@@ -228,11 +225,21 @@ const App = () => {
                                     <div className="col-3 d-flex align-items-center">
                                         {d.title}
                                     </div>
-                                    <div className="col-5 d-flex align-items-center">
+                                    <div className="col-6 d-flex align-items-center">
                                         {d.singer.map((s) => s.name).join(", ")}
                                     </div>
-                                    <div className="col-2 text-center">
-                                        <button className="btn btn-dark">
+                                    <div className="col-1 text-center">
+                                        <button
+                                            className="btn btn-dark"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation(); // prevent triggering row click
+                                                console.log(
+                                                    "Options clicked:",
+                                                    d.id
+                                                );
+                                            }}
+                                        >
                                             <i className="fa-solid fa-ellipsis"></i>
                                         </button>
                                     </div>
@@ -335,7 +342,9 @@ const App = () => {
             )}
             <audio
                 ref={audioRef}
-                src={currentIndex !== null ? songs[currentIndex].music_url : ""}
+                src={
+                    currentIndex !== null ? songs[currentIndex].music_url : null
+                }
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
             />
